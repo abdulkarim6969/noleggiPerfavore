@@ -10,4 +10,8 @@ import java.util.List;
 @Repository
 public interface OggettiRepository extends JpaRepository<Oggetti, Integer> {
     List<Oggetti> findByEmailProprietario_Email(@Size(max = 255) String emailProprietarioEmail);
+
+    List<Oggetti> findByNomeCategoria_Nome(String nomeCategoria);
+
+    List<Oggetti> findByNomeContainingIgnoreCase(String nome);
 }

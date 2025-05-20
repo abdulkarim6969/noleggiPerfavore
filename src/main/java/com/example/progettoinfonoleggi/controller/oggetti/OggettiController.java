@@ -43,6 +43,11 @@ public class OggettiController {
         return ResponseEntity.ok(oggettoDTO);
     }
 
+    @GetMapping("/categoria/{nomeCategoria}")
+    public ResponseEntity<List<OggettoDTO>> getOggettiByNomeCategoria(@PathVariable String nomeCategoria) {
+        List<OggettoDTO> lista = oggettiService.getOggettiByNomeCategoria(nomeCategoria);
+        return ResponseEntity.ok(lista);
+    }
 
     @GetMapping("/{id}/immagine")
     public ResponseEntity<byte[]> getImmagine(@PathVariable Integer id) {
@@ -57,5 +62,12 @@ public class OggettiController {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @GetMapping("/cerca/{nome}")
+    public ResponseEntity<List<OggettoDTO>> cercaOggettiPerNome(@PathVariable String nome) {
+        List<OggettoDTO> lista = oggettiService.getOggettiByNomeSimile(nome);
+        return ResponseEntity.ok(lista);
+    }
+
 
 }

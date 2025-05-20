@@ -116,6 +116,51 @@ public class OggettiService {
                 .collect(Collectors.toList());
     }
 
+    public List<OggettoDTO> getOggettiByNomeCategoria(String nomeCategoria) {
+        List<Oggetti> lista = oggettiRepository.findByNomeCategoria_Nome(nomeCategoria);
+        return lista.stream()
+                .map(o -> {
+                    // codifica + prefisso, qui assumiamo JPEG
+                    String base64 = Base64.getEncoder().encodeToString(o.getImmagine());
+                    String dataUrl = "data:image/jpeg;base64," + base64;
+                    return new OggettoDTO(
+                            o.getDataCreazione(),
+                            o.getDescrizione(),
+                            o.getEmailProprietario().getEmail(),
+                            o.getId(),
+                            dataUrl,
+                            o.getDataUltimaModifica(),
+                            o.getNome(),
+                            o.getNomeCategoria().getNome(),
+                            o.getPrezzoGiornaliero()
+
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<OggettoDTO> getOggettiByNomeSimile(String nome) {
+        List<Oggetti> lista = oggettiRepository.findByNomeContainingIgnoreCase(nome);
+        return lista.stream()
+                .map(o -> {
+                    String base64 = Base64.getEncoder().encodeToString(o.getImmagine());
+                    String dataUrl = "data:image/jpeg;base64," + base64;
+                    return new OggettoDTO(
+                            o.getDataCreazione(),
+                            o.getDescrizione(),
+                            o.getEmailProprietario().getEmail(),
+                            o.getId(),
+                            dataUrl,
+                            o.getDataUltimaModifica(),
+                            o.getNome(),
+                            o.getNomeCategoria().getNome(),
+                            o.getPrezzoGiornaliero()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+
     public OggettoDTO getOggettoById(int id) {
         OggettoDTO oggettoDTO = new OggettoDTO();
         Oggetti oggetti = oggettiRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Oggetto non trovato"));
