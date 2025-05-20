@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface OggettiRepository extends JpaRepository<Oggetti, Integer> {
-
     List<Oggetti> findByEmailProprietario_Email(@Size(max = 255) String emailProprietarioEmail);
 }

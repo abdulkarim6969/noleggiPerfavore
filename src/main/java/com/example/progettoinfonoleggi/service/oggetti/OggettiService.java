@@ -2,10 +2,10 @@ package com.example.progettoinfonoleggi.service.oggetti;
 
 import com.example.progettoinfonoleggi.dto.CreaOggettoDTO;
 import com.example.progettoinfonoleggi.dto.OggettoDTO;
-import com.example.progettoinfonoleggi.model.oggetti.CategorieOggetti;
+import com.example.progettoinfonoleggi.model.oggetti.categorie.CategorieOggetti;
 import com.example.progettoinfonoleggi.model.oggetti.Oggetti;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
-import com.example.progettoinfonoleggi.repository.oggetti.CategorieOggettiRepository;
+import com.example.progettoinfonoleggi.repository.oggetti.categorie.CategorieOggettiRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
 import jakarta.persistence.EntityNotFoundException;
