@@ -1,7 +1,6 @@
 package com.example.progettoinfonoleggi.service.oggetti;
 
-import com.example.progettoinfonoleggi.dto.CreaOggettoDTO;
-import com.example.progettoinfonoleggi.dto.OggettoDTO;
+import com.example.progettoinfonoleggi.dto.*;
 import com.example.progettoinfonoleggi.model.oggetti.categorie.CategorieOggetti;
 import com.example.progettoinfonoleggi.model.oggetti.Oggetti;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
@@ -9,6 +8,7 @@ import com.example.progettoinfonoleggi.repository.oggetti.categorie.CategorieOgg
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,6 +35,47 @@ public class OggettiService {
 
     @Autowired
     private  CategorieOggettiRepository categorieRepository;
+
+    @Autowired
+    private ValoriAttributiService valoriAttributiService;
+
+    @Transactional
+    public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
+        // 1. Salva l'oggetto principale
+        Integer idOggetto = salvaOggettoERitornaId(file, dto);
+
+        // 2. Salva gli attributi
+        valoriAttributiService.aggiungiValoriAttributi(
+                new AggiungiValoriAttributiDTO(idOggetto, dto.getAttributi())
+        );
+    }
+
+    // Metodo privato riadattato da salvaOggetto() per ritornare l'ID
+    private Integer salvaOggettoERitornaId(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
+        Utenti proprietario = utentiRepository
+                .findByEmail(dto.getEmailProprietario())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Errore: utente con email '" + dto.getEmailProprietario() + "' non trovato"
+                ));
+
+        CategorieOggetti categoria = categorieRepository
+                .findByNome(dto.getNomeCategoria())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Errore: categoria '" + dto.getNomeCategoria() + "' non trovata"
+                ));
+
+        Oggetti o = new Oggetti();
+        o.setNome(dto.getNome());
+        o.setDescrizione(dto.getDescrizione());
+        o.setPrezzoGiornaliero(BigDecimal.valueOf(dto.getPrezzoGiornaliero()));
+        o.setEmailProprietario(proprietario);
+        o.setNomeCategoria(categoria);
+        o.setImmagine(file.getBytes());
+
+        return oggettiRepository.save(o).getId(); // Ritorna l'ID dell'oggetto salvato
+    }
 
     public void salvaOggetto(MultipartFile file, CreaOggettoDTO dto) throws IOException {
         // 1. Controllo Utente
@@ -183,6 +224,32 @@ public class OggettiService {
 
     }
 
+    public OggettoCompletoDTO getOggettoCompletoById(Integer id) {
+        // 1. Recupera l'oggetto
+        OggettoDTO oggettoDTO = this.getOggettoById(id);
+
+        // 2. Recupera gli attributi
+        List<ValoreAttributoDTO> attributi = valoriAttributiService.getValoriPerOggetto(id);
+
+        // 3. Costruisci e ritorna il DTO unificato
+        OggettoCompletoDTO response = new OggettoCompletoDTO();
+
+        // Mappa i campi da OggettoDTO a OggettoCompletoDTO
+        response.setId(oggettoDTO.getId());
+        response.setEmailProprietario(oggettoDTO.getEmailProprietario());
+        response.setNomeCategoria(oggettoDTO.getNomeCategoria());
+        response.setNome(oggettoDTO.getNome());
+        response.setDescrizione(oggettoDTO.getDescrizione());
+        response.setPrezzoGiornaliero(oggettoDTO.getPrezzoGiornaliero());
+        response.setImmagineBase64(oggettoDTO.getImmagineBase64());
+        response.setDataCreazione(oggettoDTO.getDataCreazione());
+        response.setUltimaModifica(oggettoDTO.getUltimaModifica());
+
+        // Aggiungi gli attributi
+        response.setAttributi(attributi);
+
+        return response;
+    }
 
     public byte[] getImmagineOggetto(Integer idOggetto) {
         Oggetti o = oggettiRepository.findById(idOggetto)
