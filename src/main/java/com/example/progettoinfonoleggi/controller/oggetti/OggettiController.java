@@ -1,9 +1,12 @@
 package com.example.progettoinfonoleggi.controller.oggetti;
 
 
+import com.example.progettoinfonoleggi.dto.AggiungiValoriAttributiDTO;
 import com.example.progettoinfonoleggi.dto.CreaOggettoDTO;
 import com.example.progettoinfonoleggi.dto.OggettoDTO;
+import com.example.progettoinfonoleggi.dto.ValoreAttributoDTO;
 import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
+import com.example.progettoinfonoleggi.service.oggetti.ValoriAttributiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,8 @@ public class OggettiController {
 
     @Autowired
     private OggettiService oggettiService;
+    @Autowired
+    private ValoriAttributiService valoriAttributiService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> salvaOggetto(
@@ -69,5 +74,16 @@ public class OggettiController {
         return ResponseEntity.ok(lista);
     }
 
+    @PostMapping()
+    public ResponseEntity<String> aggiungiValoriAttributi(@RequestBody AggiungiValoriAttributiDTO dto) {
+        valoriAttributiService.aggiungiValoriAttributi(dto);
+        return ResponseEntity.ok("Valori attributi salvati con successo.");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<List<ValoreAttributoDTO>> getValoriAttributiPerOggetto(@PathVariable Integer id) {
+        List<ValoreAttributoDTO> attributi = valoriAttributiService.getValoriPerOggetto(id);
+        return ResponseEntity.ok(attributi);
+    }
 
 }
