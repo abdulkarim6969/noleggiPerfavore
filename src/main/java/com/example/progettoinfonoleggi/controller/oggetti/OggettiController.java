@@ -31,8 +31,8 @@ public class OggettiController {
     }
 
 
-    @GetMapping("")
-    public ResponseEntity<List<OggettoDTO>> getOggettiByEmail(@RequestParam String email) {
+    @GetMapping("/{email}")
+    public ResponseEntity<List<OggettoDTO>> getOggettiByEmail(@PathVariable String email) {
         List<OggettoDTO> lista = oggettiService.getOggettiByEmailProprietario(email);
         return ResponseEntity.ok(lista);
     }

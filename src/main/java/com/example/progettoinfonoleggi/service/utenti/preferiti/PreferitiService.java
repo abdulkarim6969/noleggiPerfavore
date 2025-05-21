@@ -38,6 +38,11 @@ public class PreferitiService {
         Oggetti oggetto = oggettiRepository.findById(preferito.getIdOggetto())
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
 
+        boolean exists = preferitiRepository.existsByEmailUtenteAndIdOggetto(utente, oggetto);
+        if (exists) {
+            throw new RuntimeException("Articolo già presente nei preferiti");
+        }
+
         Utenti proprietario = oggetto.getEmailProprietario();
 
         if (!utente.getEmail().equals(oggetto.getEmailProprietario().getEmail())) {

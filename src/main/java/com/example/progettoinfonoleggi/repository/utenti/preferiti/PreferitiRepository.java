@@ -16,4 +16,5 @@ public interface PreferitiRepository extends JpaRepository<Preferiti, Integer> {
     @Query("SELECT p.idOggetto FROM Preferiti p WHERE p.emailUtente.email = :emailUtente")
     List<Oggetti> findOggettiPreferitiByEmailUtente(@Param("emailUtente") String emailUtente);
 
+    boolean existsByEmailUtenteAndIdOggetto(Utenti utente, Oggetti oggetto);
 }
