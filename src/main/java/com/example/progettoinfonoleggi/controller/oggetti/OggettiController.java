@@ -74,13 +74,15 @@ public class OggettiController {
         return ResponseEntity.ok(lista);
     }
 
-    @PostMapping()
+    //provo a inserire l'autore dell'oggetto 7
+    @PostMapping("/addValoriAttributi")
     public ResponseEntity<String> aggiungiValoriAttributi(@RequestBody AggiungiValoriAttributiDTO dto) {
         valoriAttributiService.aggiungiValoriAttributi(dto);
         return ResponseEntity.ok("Valori attributi salvati con successo.");
     }
 
-    @GetMapping("/{id}")
+    //provo a prendere le pagine dell'oggetto 7
+    @GetMapping("/{id}/attributi")
     public ResponseEntity<List<ValoreAttributoDTO>> getValoriAttributiPerOggetto(@PathVariable Integer id) {
         List<ValoreAttributoDTO> attributi = valoriAttributiService.getValoriPerOggetto(id);
         return ResponseEntity.ok(attributi);
