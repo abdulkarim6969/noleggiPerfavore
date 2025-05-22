@@ -1,8 +1,7 @@
 package com.example.progettoinfonoleggi.controller.oggetti;
 
 
-import com.example.progettoinfonoleggi.dto.CreaOggettoDTO;
-import com.example.progettoinfonoleggi.dto.OggettoDTO;
+import com.example.progettoinfonoleggi.dto.*;
 import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import com.example.progettoinfonoleggi.service.oggetti.ValoriAttributiService;
 import jakarta.validation.Valid;
@@ -25,6 +24,9 @@ public class OggettiController {
 
     @Autowired
     private OggettiService oggettiService;
+
+    @Autowired
+    private ValoriAttributiService valoriAttributiService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> salvaOggetto(
