@@ -1,5 +1,6 @@
 package com.example.progettoinfonoleggi.service.utenti.preferiti;
 
+import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
 import com.example.progettoinfonoleggi.dto.OggettoDTO;
 import com.example.progettoinfonoleggi.dto.PreferitiDTO;
 import com.example.progettoinfonoleggi.model.notifiche.Notifiche;
@@ -10,6 +11,7 @@ import com.example.progettoinfonoleggi.repository.notifiche.NotificheRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.preferiti.PreferitiRepository;
+import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,9 @@ public class PreferitiService {
 
     @Autowired
     private NotificheRepository notificheRepository;
+
+    @Autowired
+    private OggettiService oggettiService;
 
     public void aggiungiPreferito(PreferitiDTO preferito) {
 
@@ -76,23 +81,10 @@ public class PreferitiService {
         preferitiRepository.delete(newpreferito);
     }
 
-    public List<OggettoDTO> getOggettiPreferitiByEmailUtente(String emailUtente) {
-        List<Oggetti> preferiti = preferitiRepository.findOggettiPreferitiByEmailUtente(emailUtente);
-
-        return preferiti.stream().map(oggetto -> {
-            String immagineBase64 = Base64.getEncoder().encodeToString(oggetto.getImmagine());
-            return new OggettoDTO(
-                    oggetto.getDataCreazione(),
-                    oggetto.getDescrizione(),
-                    oggetto.getEmailProprietario().getEmail(),
-                    oggetto.getId(),
-                    immagineBase64,
-                    oggetto.getDataUltimaModifica(),
-                    oggetto.getNome(),
-                    oggetto.getNomeCategoria().getNome(), // o `.toString()` se è enum
-                    oggetto.getPrezzoGiornaliero()
-            );
-        }).toList();
+    public List<OggettoCompletoDTO> getOggettiPreferitiByEmailUtente(String emailUtente) {
+        return preferitiRepository.findOggettiPreferitiByEmailUtente(emailUtente).stream()
+                .map(oggettiService::convertiACompletoDTO) // Usa il metodo esistente
+                .toList();
     }
 
 

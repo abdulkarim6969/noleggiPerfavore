@@ -134,70 +134,22 @@ public class OggettiService {
         oggettiRepository.save(o);
     }
 
-    public List<OggettoDTO> getOggettiByEmailProprietario(String email) {
-        List<Oggetti> lista = oggettiRepository.findByEmailProprietario_Email(email);
-         return lista.stream()
-                .map(o -> {
-                    // codifica + prefisso, qui assumiamo JPEG
-                    String base64 = Base64.getEncoder().encodeToString(o.getImmagine());
-                    String dataUrl = "data:image/jpeg;base64," + base64;
-                    return new OggettoDTO(
-                           o.getDataCreazione(),
-                            o.getDescrizione(),
-                            o.getEmailProprietario().getEmail(),
-                            o.getId(),
-                            dataUrl,
-                            o.getDataUltimaModifica(),
-                            o.getNome(),
-                            o.getNomeCategoria().getNome(),
-                            o.getPrezzoGiornaliero()
-
-                    );
-                })
+    public List<OggettoCompletoDTO> getOggettiByEmailProprietario(String email) {
+        return oggettiRepository.findByEmailProprietario_Email(email).stream()
+                .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<OggettoDTO> getOggettiByNomeCategoria(String nomeCategoria) {
-        List<Oggetti> lista = oggettiRepository.findByNomeCategoria_Nome(nomeCategoria);
-        return lista.stream()
-                .map(o -> {
-                    // codifica + prefisso, qui assumiamo JPEG
-                    String base64 = Base64.getEncoder().encodeToString(o.getImmagine());
-                    String dataUrl = "data:image/jpeg;base64," + base64;
-                    return new OggettoDTO(
-                            o.getDataCreazione(),
-                            o.getDescrizione(),
-                            o.getEmailProprietario().getEmail(),
-                            o.getId(),
-                            dataUrl,
-                            o.getDataUltimaModifica(),
-                            o.getNome(),
-                            o.getNomeCategoria().getNome(),
-                            o.getPrezzoGiornaliero()
 
-                    );
-                })
+    public List<OggettoCompletoDTO> getOggettiByNomeCategoria(String nomeCategoria) {
+        return oggettiRepository.findByNomeCategoria_Nome(nomeCategoria).stream()
+                .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<OggettoDTO> getOggettiByNomeSimile(String nome) {
-        List<Oggetti> lista = oggettiRepository.findByNomeContainingIgnoreCase(nome);
-        return lista.stream()
-                .map(o -> {
-                    String base64 = Base64.getEncoder().encodeToString(o.getImmagine());
-                    String dataUrl = "data:image/jpeg;base64," + base64;
-                    return new OggettoDTO(
-                            o.getDataCreazione(),
-                            o.getDescrizione(),
-                            o.getEmailProprietario().getEmail(),
-                            o.getId(),
-                            dataUrl,
-                            o.getDataUltimaModifica(),
-                            o.getNome(),
-                            o.getNomeCategoria().getNome(),
-                            o.getPrezzoGiornaliero()
-                    );
-                })
+    public List<OggettoCompletoDTO> getOggettiByNomeSimile(String nome) {
+        return oggettiRepository.findByNomeContainingIgnoreCase(nome).stream()
+                .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
     }
 
@@ -224,31 +176,11 @@ public class OggettiService {
 
     }
 
-    public OggettoCompletoDTO getOggettoCompletoById(Integer id) {
-        // 1. Recupera l'oggetto
-        OggettoDTO oggettoDTO = this.getOggettoById(id);
-
-        // 2. Recupera gli attributi
-        List<ValoreAttributoDTO> attributi = valoriAttributiService.getValoriPerOggetto(id);
-
-        // 3. Costruisci e ritorna il DTO unificato
-        OggettoCompletoDTO response = new OggettoCompletoDTO();
-
-        // Mappa i campi da OggettoDTO a OggettoCompletoDTO
-        response.setId(oggettoDTO.getId());
-        response.setEmailProprietario(oggettoDTO.getEmailProprietario());
-        response.setNomeCategoria(oggettoDTO.getNomeCategoria());
-        response.setNome(oggettoDTO.getNome());
-        response.setDescrizione(oggettoDTO.getDescrizione());
-        response.setPrezzoGiornaliero(oggettoDTO.getPrezzoGiornaliero());
-        response.setImmagineBase64(oggettoDTO.getImmagineBase64());
-        response.setDataCreazione(oggettoDTO.getDataCreazione());
-        response.setUltimaModifica(oggettoDTO.getUltimaModifica());
-
-        // Aggiungi gli attributi
-        response.setAttributi(attributi);
-
-        return response;
+    public OggettoCompletoDTO getOggettoById(Integer id) {
+        return convertiACompletoDTO(
+                oggettiRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Oggetto non trovato"))
+        );
     }
 
     public byte[] getImmagineOggetto(Integer idOggetto) {
@@ -262,4 +194,44 @@ public class OggettiService {
         }
         return img;
     }
+
+    // Metodo privato di supporto per la conversione
+    public OggettoCompletoDTO convertiACompletoDTO(Oggetti oggetto) {
+        // 1. Converti l'oggetto base
+        OggettoCompletoDTO dto = new OggettoCompletoDTO();
+
+        // Mappa i campi base
+        String base64 = Base64.getEncoder().encodeToString(oggetto.getImmagine());
+        String dataUrl = "data:image/jpeg;base64," + base64;
+
+        dto.setId(oggetto.getId());
+        dto.setNome(oggetto.getNome());
+        dto.setDescrizione(oggetto.getDescrizione());
+        dto.setPrezzoGiornaliero(oggetto.getPrezzoGiornaliero());
+        dto.setEmailProprietario(oggetto.getEmailProprietario().getEmail());
+        dto.setNomeCategoria(oggetto.getNomeCategoria().getNome());
+        dto.setImmagineBase64(dataUrl);
+        dto.setDataCreazione(oggetto.getDataCreazione());
+        dto.setUltimaModifica(oggetto.getDataUltimaModifica());
+
+        // 2. Aggiungi gli attributi
+        dto.setAttributi(valoriAttributiService.getValoriPerOggetto(oggetto.getId()));
+
+        return dto;
+    }
+
+
+
 }
+
+/*
+    avendo cambiato approccio da oggetto e attributi separati a oggetto con anche gli attributi,
+    tutti i metodi che restituiscono un oggetto adesso devono restituire l'oggetto completo.
+    Tra questi metodi di OggettiService, l'unico corretto è salvaOggettoCompleto e getOggettoCompletoById,
+    ora mi devi riadattare anche: getOggettiByNomeSimile - getOggettiByNomeCategoria - getOggettiByEmailProprietario
+    questi metodi funzionano perfettamente quindi cambia solo lo stretto necessario per returnare non l'oggetto ma
+    l'oggetto completo come hai già fatto eccellentemente in salvaOggettoCompleto e getOggettoCompletoById.
+
+
+
+*/

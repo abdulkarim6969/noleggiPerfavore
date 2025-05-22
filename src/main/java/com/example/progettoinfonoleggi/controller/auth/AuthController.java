@@ -5,6 +5,7 @@ import com.example.progettoinfonoleggi.dto.LoginResponseDTO;
 import com.example.progettoinfonoleggi.dto.RegisterRequestDTO;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
 import com.example.progettoinfonoleggi.service.jwt.JWTservice;
+import com.example.progettoinfonoleggi.service.utenti.SaldoService;
 import com.example.progettoinfonoleggi.service.utenti.UtentiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,6 +26,9 @@ public class AuthController {
     private UtentiService utentiService;
 
     @Autowired
+    private SaldoService saldoService;
+
+    @Autowired
     private JWTservice jwtService;
 
     @PostMapping("/register")
@@ -40,6 +44,9 @@ public class AuthController {
 
         try {
             Utenti registeredUser = utentiService.register(user);
+
+            saldoService.creaSaldoPerUtente(registeredUser.getEmail());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
         } catch (Exception e) {
             // Handle other exceptions

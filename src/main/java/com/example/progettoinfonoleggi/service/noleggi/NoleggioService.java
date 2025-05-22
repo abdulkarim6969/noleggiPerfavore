@@ -4,10 +4,12 @@ import com.example.progettoinfonoleggi.dto.RichiestaNoleggioDTO;
 import com.example.progettoinfonoleggi.model.noleggi.*;
 import com.example.progettoinfonoleggi.model.notifiche.Notifiche;
 import com.example.progettoinfonoleggi.model.oggetti.Oggetti;
+import com.example.progettoinfonoleggi.model.utenti.Saldo;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
 import com.example.progettoinfonoleggi.repository.noleggi.*;
 import com.example.progettoinfonoleggi.repository.notifiche.NotificheRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
+import com.example.progettoinfonoleggi.repository.utenti.SaldoRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
@@ -29,6 +31,9 @@ public class NoleggioService {
 
     @Autowired
     private RichiesteNoleggiRepository richiestaNoleggioRepository;
+
+    @Autowired
+    private SaldoRepository saldoRepository;
 
     @Autowired
     private NoleggiRepository noleggioRepository;
@@ -122,7 +127,7 @@ public class NoleggioService {
         String paymentIdDestinatario = "PAYD-" + UUID.randomUUID();
         String nomeCorriere = "Corriere Fittizio";
 
-        // Creo transazione fittizia
+        // Creo transazione
         Transazioni transazione = new Transazioni();
         transazione.setEmailMittente(richiesta.getEmailRichiedente());
         transazione.setEmailDestinatario(richiesta.getCodiceOggetto().getEmailProprietario());
@@ -134,7 +139,7 @@ public class NoleggioService {
         transazione.setPaymentIdDestinatario(paymentIdDestinatario);
         transazione = transazioneRepository.save(transazione);
 
-        // Creo spedizione fittizia
+        // Creo spedizione
         Spedizioni spedizione = new Spedizioni();
         spedizione.setEmailMittente(richiesta.getCodiceOggetto().getEmailProprietario());
         spedizione.setEmailDestinatario(richiesta.getEmailRichiedente());
@@ -160,10 +165,24 @@ public class NoleggioService {
         if (prezzoGiornaliero == null) {
             throw new RuntimeException("Prezzo giornaliero non definito per l'oggetto");
         }
-        noleggio.setPrezzoTotale(prezzoGiornaliero.multiply(BigDecimal.valueOf(giorni)));
+
+        BigDecimal prezzoTotale = prezzoGiornaliero.multiply(BigDecimal.valueOf(giorni));
+        noleggio.setPrezzoTotale(prezzoTotale);
 
         noleggioRepository.save(noleggio);
+
+        // AGGIORNAMENTO SALDO DEL PROPRIETARIO
+        String emailProprietario = richiesta.getCodiceOggetto().getEmailProprietario().getEmail();
+
+        Saldo saldoProprietario = saldoRepository.findByEmailUtente(emailProprietario)
+                .orElseThrow(() -> new RuntimeException("Saldo non trovato per l'utente: " + emailProprietario));
+
+        BigDecimal saldoAttuale = saldoProprietario.getSaldo();
+        saldoProprietario.setSaldo(saldoAttuale.add(prezzoTotale));
+
+        saldoRepository.save(saldoProprietario);
     }
+
 
     public List<LocalDate> getGiorniOccupatiConBuffer(Integer codiceOggetto) {
         List<Noleggi> noleggiAttivi = noleggioRepository.findNoleggiAttiviByOggetto(codiceOggetto);
