@@ -120,10 +120,4 @@ public class OggettiController {
         }
     }
 
-    /*
-     - gestire i controlli ad es. non posso inserire l'attributo pagine se c'è già,
-       ma devo modificarlo quindi controllo se esiste già per quell'oggetto il valore dell'attributo.
-     -
-    */
-
 }

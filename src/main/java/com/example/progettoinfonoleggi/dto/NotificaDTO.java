@@ -17,14 +17,5 @@ public class NotificaDTO {
     private String emailMittente;
     private String nomeOggetto;
 
-    public NotificaDTO(Long id, String messaggio, String tipo, LocalDateTime data, boolean letto, String emailMittente, String nomeOggetto) {
-        this.id = id;
-        this.messaggio = messaggio;
-        this.tipo = tipo;
-        this.data = data;
-        this.letto = letto;
-        this.emailMittente = emailMittente;
-        this.nomeOggetto = nomeOggetto;
-    }
 }
 
