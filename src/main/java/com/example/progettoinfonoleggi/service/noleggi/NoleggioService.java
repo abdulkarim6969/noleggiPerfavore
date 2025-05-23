@@ -54,6 +54,11 @@ public class NoleggioService {
     @Autowired
     private NotificheRepository notificheRepository;
 
+    public static final String STATO_IN_ATTESA = "IN_ATTESA";
+    public static final String STATO_IN_SPEDIZIONE = "IN_SPEDIZIONE";
+    public static final String STATO_ATTIVO = "ATTIVO";
+    public static final String STATO_INATTIVO = "INATTIVO";
+
     @Transactional
     public RichiestaNoleggioDTO creaRichiestaNoleggio(RichiestaNoleggioDTO richiestaDTO) {
 
@@ -83,7 +88,7 @@ public class NoleggioService {
         richiesta.setCodiceOggetto(oggetto);
         richiesta.setDataInizio(richiestaDTO.getDataInizio());
         richiesta.setDataFine(richiestaDTO.getDataFine());
-        richiesta.setStato("IN_ATTESA");
+        richiesta.setStato(STATO_IN_ATTESA);
         richiesta = richiestaNoleggioRepository.save(richiesta);
 
 
@@ -213,18 +218,37 @@ public class NoleggioService {
 
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // ogni giorno a mezzanotte
+    @Scheduled(cron = "0 20 16 * * ?") // ogni giorno a mezzanotte
     @Transactional
-    public void aggiornaNoleggiScaduti() {
+    public void aggiornaStatoNoleggi() {
         LocalDate oggi = LocalDate.now();
-        List<Noleggi> noleggiAttivi = noleggioRepository.findByStato("ATTIVO");
+        List<Noleggi> tuttiNoleggi = noleggioRepository.findAll();
 
-        for (Noleggi noleggio : noleggiAttivi) {
-            if (noleggio.getDataFine().isBefore(oggi)) {
-                noleggio.setStato("INATTIVO");
+        for (Noleggi noleggio : tuttiNoleggi) {
+            LocalDate inizio = noleggio.getDataInizio();
+            LocalDate fine = noleggio.getDataFine();
+
+            LocalDate inizioSpedizione = inizio.minusDays(3);
+            LocalDate fineSpedizione = fine.plusDays(3);
+
+            String nuovoStato;
+
+            if (!oggi.isBefore(inizioSpedizione) && oggi.isBefore(inizio)) {
+                nuovoStato = STATO_IN_SPEDIZIONE;
+            } else if (!oggi.isBefore(inizio) && !oggi.isAfter(fine)) {
+                nuovoStato = STATO_ATTIVO;
+            } else if (oggi.isAfter(fine) && !oggi.isAfter(fineSpedizione)) {
+                nuovoStato = STATO_IN_SPEDIZIONE;
+            } else {
+                nuovoStato = STATO_INATTIVO;
+            }
+
+            if (!noleggio.getStato().equals(nuovoStato)) {
+                noleggio.setStato(nuovoStato);
                 noleggioRepository.save(noleggio);
             }
         }
     }
+
 
 }
