@@ -50,6 +50,15 @@ public class ValoriAttributiService {
         }
     }
 
+    /**
+     * Restituisce la lista degli attributi obbligatori per una categoria.
+     */
+    public List<String> getAttributiObbligatoriPerCategoria(String nomeCategoria) {
+        return attributiCategoriaRepository.findByCategoria_Nome(nomeCategoria).stream()
+                .map(AttributiCategoria::getNomeAttributo)
+                .collect(Collectors.toList());
+    }
+
     public List<ValoreAttributoDTO> getValoriPerOggetto(Integer idOggetto) {
         return valoriAttributiRepository.findByOggetto_Id(idOggetto).stream()
                 .map(v -> {

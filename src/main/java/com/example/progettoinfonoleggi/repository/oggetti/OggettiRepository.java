@@ -14,4 +14,6 @@ public interface OggettiRepository extends JpaRepository<Oggetti, Integer> {
     List<Oggetti> findByNomeCategoria_Nome(String nomeCategoria);
 
     List<Oggetti> findByNomeContainingIgnoreCase(String nome);
+
+    List<Oggetti> findByEmailProprietario_EmailNot(String emailProprietario);
 }
