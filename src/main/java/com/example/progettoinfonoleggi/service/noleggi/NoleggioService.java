@@ -49,6 +49,7 @@ public class NoleggioService {
 
     @Autowired
     private OggettiRepository oggettiRepository;
+
     @Autowired
     private NotificheRepository notificheRepository;
 
