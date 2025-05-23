@@ -13,6 +13,7 @@ import com.example.progettoinfonoleggi.repository.utenti.SaldoRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -212,6 +213,18 @@ public class NoleggioService {
 
     }
 
+    @Scheduled(cron = "0 0 0 * * ?") // ogni giorno a mezzanotte
+    @Transactional
+    public void aggiornaNoleggiScaduti() {
+        LocalDate oggi = LocalDate.now();
+        List<Noleggi> noleggiAttivi = noleggioRepository.findByStato("ATTIVO");
 
-    // Altri metodi di ricerca, cancellazione, aggiornamento se necessari
+        for (Noleggi noleggio : noleggiAttivi) {
+            if (noleggio.getDataFine().isBefore(oggi)) {
+                noleggio.setStato("INATTIVO");
+                noleggioRepository.save(noleggio);
+            }
+        }
+    }
+
 }

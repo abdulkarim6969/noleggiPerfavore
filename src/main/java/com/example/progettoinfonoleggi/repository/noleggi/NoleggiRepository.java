@@ -19,4 +19,6 @@ public interface NoleggiRepository extends JpaRepository<Noleggi, Long> {
 
     @Query("SELECT n FROM Noleggi n WHERE n.codiceOggetto.id = :codiceOggetto AND n.stato = 'ATTIVO'")
     List<Noleggi> findNoleggiAttiviByOggetto(@Param("codiceOggetto") Integer codiceOggetto);
+
+    List<Noleggi> findByStato(String stato);
 }
