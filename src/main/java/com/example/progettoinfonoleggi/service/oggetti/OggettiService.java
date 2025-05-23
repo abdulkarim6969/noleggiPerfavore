@@ -80,9 +80,14 @@ public class OggettiService {
 
         List<Oggetti> subList = tuttiOggetti.subList(fromIndex, toIndex);
 
+        // Converti la subList in DTO
+        List<OggettoCompletoDTO> dtoList = subList.stream()
+                .map(this::convertiACompletoDTO)  // Assumi che questo metodo esista nel service
+                .collect(Collectors.toList());
+
         // Prepara la risposta
         Map<String, Object> response = new HashMap<>();
-        response.put("oggetti", subList);
+        response.put("oggetti", dtoList);
 
         // Se siamo arrivati alla fine della lista, aggiungi "stop"
         response.put("stop", toIndex == tuttiOggetti.size());
@@ -240,9 +245,9 @@ public class OggettiService {
         // 1. Converti l'oggetto base
         OggettoCompletoDTO dto = new OggettoCompletoDTO();
 
-        // Mappa i campi base
-        String base64 = Base64.getEncoder().encodeToString(oggetto.getImmagine());
-        String dataUrl = "data:image/jpeg;base64," + base64;
+        if (oggetto.getImmagine() != null) {
+            dto.setImmagineBase64(Base64.getEncoder().encodeToString(oggetto.getImmagine()));
+        }
 
         dto.setId(oggetto.getId());
         dto.setNome(oggetto.getNome());
@@ -250,7 +255,6 @@ public class OggettiService {
         dto.setPrezzoGiornaliero(oggetto.getPrezzoGiornaliero());
         dto.setEmailProprietario(oggetto.getEmailProprietario().getEmail());
         dto.setNomeCategoria(oggetto.getNomeCategoria().getNome());
-        dto.setImmagineBase64(dataUrl);
         dto.setDataCreazione(oggetto.getDataCreazione());
         dto.setUltimaModifica(oggetto.getDataUltimaModifica());
 
@@ -264,14 +268,3 @@ public class OggettiService {
 
 }
 
-/*
-    avendo cambiato approccio da oggetto e attributi separati a oggetto con anche gli attributi,
-    tutti i metodi che restituiscono un oggetto adesso devono restituire l'oggetto completo.
-    Tra questi metodi di OggettiService, l'unico corretto è salvaOggettoCompleto e getOggettoCompletoById,
-    ora mi devi riadattare anche: getOggettiByNomeSimile - getOggettiByNomeCategoria - getOggettiByEmailProprietario
-    questi metodi funzionano perfettamente quindi cambia solo lo stretto necessario per returnare non l'oggetto ma
-    l'oggetto completo come hai già fatto eccellentemente in salvaOggettoCompleto e getOggettoCompletoById.
-
-
-
-*/

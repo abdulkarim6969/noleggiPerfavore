@@ -50,7 +50,7 @@ public class NoleggiController {
         return ResponseEntity.ok(giorniOccupati);
     }
 
-    @GetMapping("richieste/ricevute/{emailProprietario}")
+    @GetMapping("/richieste/ricevute/{emailProprietario}")
     public ResponseEntity<List<RichiestaNoleggioDTO>> getRichiesteRicevute(@PathVariable String emailProprietario) {
         List<RichiestaNoleggioDTO> richieste = noleggioService.getRichiesteRicevuteDaUtente(emailProprietario);
         return ResponseEntity.ok(richieste);

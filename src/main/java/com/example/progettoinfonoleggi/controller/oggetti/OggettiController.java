@@ -112,11 +112,11 @@ public class OggettiController {
         }
     }
 
-    @GetMapping("/random")
+    @GetMapping("/random/{start}/{end}/{emailProprietario}")
     public ResponseEntity<?> getOggettiRandom(
-            @RequestParam int start,
-            @RequestParam int end,
-            @RequestParam String emailProprietario) {
+            @PathVariable int start,
+            @PathVariable int end,
+            @PathVariable String emailProprietario) {
 
         Map<String, Object> result = oggettiService.getOggettiRandomIntervalloEscludendoProprietario(start, end, emailProprietario);
         return ResponseEntity.ok(result);
