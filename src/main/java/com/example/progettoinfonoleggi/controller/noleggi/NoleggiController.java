@@ -1,5 +1,6 @@
 package com.example.progettoinfonoleggi.controller.noleggi;
 
+import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
 import com.example.progettoinfonoleggi.dto.RichiestaNoleggioDTO;
 import com.example.progettoinfonoleggi.service.noleggi.NoleggioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,4 +50,25 @@ public class NoleggiController {
         List<LocalDate> giorniOccupati = noleggioService.getGiorniOccupatiConBuffer(codiceOggetto);
         return ResponseEntity.ok(giorniOccupati);
     }
+
+    @GetMapping("/attivi/proprietario/{email}")
+    public ResponseEntity<List<OggettoCompletoDTO>> getNoleggiAttiviProprietario(@PathVariable String email) {
+        try {
+            List<OggettoCompletoDTO> result = noleggioService.getNoleggiAttiviProprietario(email);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/attivi/acquirente/{email}")
+    public ResponseEntity<List<OggettoCompletoDTO>> getNoleggiAttiviAcquirente(@PathVariable String email) {
+        try {
+            List<OggettoCompletoDTO> result = noleggioService.getNoleggiAttiviAcquirente(email);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

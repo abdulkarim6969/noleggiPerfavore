@@ -8,10 +8,14 @@ import com.example.progettoinfonoleggi.model.oggetti.categorie.ValoriAttributi;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.categorie.AttributiCategoriaRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.categorie.ValoriAttributiRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +31,7 @@ public class ValoriAttributiService {
     private OggettiRepository oggettiRepository;
 
     public void aggiungiValoriAttributi(AggiungiValoriAttributiDTO dto) {
-        Oggetti oggetto = oggettiRepository.findById(dto.getIdOggetto())
+        Oggetti oggetto = oggettiRepository.findById(Math.toIntExact(dto.getIdOggetto()))
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
 
         for (ValoreAttributoDTO valoreAttribuito : dto.getAttributi()) {
@@ -54,5 +58,26 @@ public class ValoriAttributiService {
                     dto.setValore(v.getValore());
                     return dto;
                 }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void aggiornaValoriAttributi(AggiungiValoriAttributiDTO dto) {
+        for (ValoreAttributoDTO valoreDTO : dto.getAttributi()) {
+            Optional<ValoriAttributi> valoreEsistenteOpt = valoriAttributiRepository
+                    .findByOggetto_IdAndAttributo_Id(Math.toIntExact(dto.getIdOggetto()), valoreDTO.getIdAttributoCategoria());
+
+            if (valoreEsistenteOpt.isPresent()) {
+                ValoriAttributi valoreEsistente = valoreEsistenteOpt.get();
+                valoreEsistente.setValore(valoreDTO.getValore());
+                valoriAttributiRepository.save(valoreEsistente);
+            } else {
+                // Puoi ignorare, loggare, oppure sollevare un'eccezione
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Valore attributo non trovato per oggetto " + dto.getIdOggetto()
+                                + " e attributo " + valoreDTO.getIdAttributoCategoria()
+                );
+            }
+        }
     }
 }

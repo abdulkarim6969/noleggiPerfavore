@@ -83,7 +83,7 @@ public class PreferitiService {
 
     public List<OggettoCompletoDTO> getOggettiPreferitiByEmailUtente(String emailUtente) {
         return preferitiRepository.findOggettiPreferitiByEmailUtente(emailUtente).stream()
-                .map(oggettiService::convertiACompletoDTO) // Usa il metodo esistente
+                .map(oggettiService::convertiACompletoDTO)
                 .toList();
     }
 

@@ -21,4 +21,12 @@ public interface NoleggiRepository extends JpaRepository<Noleggi, Long> {
     List<Noleggi> findNoleggiAttiviByOggetto(@Param("codiceOggetto") Integer codiceOggetto);
 
     List<Noleggi> findByStato(String stato);
+
+    @Query("SELECT n FROM Noleggi n JOIN FETCH n.codiceOggetto " +
+            "WHERE n.emailProprietario.email = :email AND n.stato IN ('ATTIVO', 'IN_SPEDIZIONE')")
+    List<Noleggi> findNoleggiAttiviProprietario(@Param("email") String email);
+
+    @Query("SELECT n FROM Noleggi n JOIN FETCH n.codiceOggetto " +
+            "WHERE n.emailNoleggiatore.email = :email AND n.stato IN ('ATTIVO', 'IN_SPEDIZIONE')")
+    List<Noleggi> findNoleggiAttiviAcquirente(@Param("email") String email);
 }

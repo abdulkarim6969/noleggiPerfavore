@@ -9,4 +9,5 @@ import lombok.Setter;
 public class ValoreAttributoDTO {
     private String nomeAttributo;
     private String valore;
+    private Integer idAttributoCategoria;
 }

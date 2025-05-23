@@ -28,14 +28,6 @@ public class OggettiController {
     @Autowired
     private ValoriAttributiService valoriAttributiService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> salvaOggetto(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("dati") CreaOggettoDTO dto) throws IOException {
-        oggettiService.salvaOggetto(file, dto);
-        return ResponseEntity.ok("Oggetto salvato con successo");
-    }
-
     @GetMapping("/{email}")
     public ResponseEntity<List<OggettoCompletoDTO>> getOggettiByEmail(@PathVariable String email) {
         List<OggettoCompletoDTO> lista = oggettiService.getOggettiByEmailProprietario(email);
@@ -68,11 +60,11 @@ public class OggettiController {
         return ResponseEntity.ok(lista);
     }
 
-    @PostMapping("/addValoriAttributi")
-    public ResponseEntity<String> aggiungiValoriAttributi(@RequestBody AggiungiValoriAttributiDTO dto) {
-        valoriAttributiService.aggiungiValoriAttributi(dto);
-        return ResponseEntity.ok("Valori attributi salvati con successo.");
+    @PutMapping("/valoriAttributi")
+    public void aggiornaValoriAttributi(@RequestBody AggiungiValoriAttributiDTO dto) {
+        valoriAttributiService.aggiornaValoriAttributi(dto);
     }
+
 
     @GetMapping("/{id}/attributi")
     public ResponseEntity<List<ValoreAttributoDTO>> getValoriAttributiPerOggetto(@PathVariable Integer id) {
@@ -86,7 +78,7 @@ public class OggettiController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(path = "/salvaCompleto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/crea", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> salvaOggettoCompleto(
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart("dati") @Valid CreaOggettoCompletoDTO dto) throws IOException {

@@ -153,29 +153,6 @@ public class OggettiService {
                 .collect(Collectors.toList());
     }
 
-
-    public OggettoDTO getOggettoById(int id) {
-        OggettoDTO oggettoDTO = new OggettoDTO();
-        Oggetti oggetti = oggettiRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Oggetto non trovato"));
-
-        String base64 = Base64.getEncoder().encodeToString(oggetti.getImmagine());
-        String dataUrl = "data:image/jpeg;base64," + base64;
-
-        oggettoDTO.setId(oggetti.getId());
-        oggettoDTO.setDescrizione(oggetti.getDescrizione());
-        oggettoDTO.setNome(oggetti.getNome());
-        oggettoDTO.setEmailProprietario(oggetti.getEmailProprietario().getEmail());
-        oggettoDTO.setNomeCategoria(oggetti.getNomeCategoria().getNome());
-        oggettoDTO.setDataCreazione(oggetti.getDataCreazione());
-        oggettoDTO.setDataCreazione(oggetti.getDataUltimaModifica());
-        oggettoDTO.setPrezzoGiornaliero(oggetti.getPrezzoGiornaliero());
-        oggettoDTO.setImmagineBase64(dataUrl);
-
-
-        return oggettoDTO;
-
-    }
-
     public OggettoCompletoDTO getOggettoById(Integer id) {
         return convertiACompletoDTO(
                 oggettiRepository.findById(id)
@@ -220,18 +197,4 @@ public class OggettiService {
         return dto;
     }
 
-
-
 }
-
-/*
-    avendo cambiato approccio da oggetto e attributi separati a oggetto con anche gli attributi,
-    tutti i metodi che restituiscono un oggetto adesso devono restituire l'oggetto completo.
-    Tra questi metodi di OggettiService, l'unico corretto è salvaOggettoCompleto e getOggettoCompletoById,
-    ora mi devi riadattare anche: getOggettiByNomeSimile - getOggettiByNomeCategoria - getOggettiByEmailProprietario
-    questi metodi funzionano perfettamente quindi cambia solo lo stretto necessario per returnare non l'oggetto ma
-    l'oggetto completo come hai già fatto eccellentemente in salvaOggettoCompleto e getOggettoCompletoById.
-
-
-
-*/

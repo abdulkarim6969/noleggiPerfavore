@@ -1,5 +1,6 @@
 package com.example.progettoinfonoleggi.service.noleggi;
 
+import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
 import com.example.progettoinfonoleggi.dto.RichiestaNoleggioDTO;
 import com.example.progettoinfonoleggi.model.noleggi.*;
 import com.example.progettoinfonoleggi.model.notifiche.Notifiche;
@@ -11,6 +12,7 @@ import com.example.progettoinfonoleggi.repository.notifiche.NotificheRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.SaldoRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
+import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,7 +54,13 @@ public class NoleggioService {
     private OggettiRepository oggettiRepository;
 
     @Autowired
+    private OggettiService oggettiService;
+
+    @Autowired
     private NotificheRepository notificheRepository;
+
+    @Autowired
+    private NoleggiRepository noleggiRepository;
 
     public static final String STATO_IN_ATTESA = "IN_ATTESA";
     public static final String STATO_IN_SPEDIZIONE = "IN_SPEDIZIONE";
@@ -250,5 +258,18 @@ public class NoleggioService {
         }
     }
 
+    public List<OggettoCompletoDTO> getNoleggiAttiviProprietario(String emailProprietario) {
+        return noleggiRepository.findNoleggiAttiviProprietario(emailProprietario)
+                .stream()
+                .map(n -> oggettiService.getOggettoById(n.getCodiceOggetto().getId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<OggettoCompletoDTO> getNoleggiAttiviAcquirente(String emailAcquirente) {
+        return noleggiRepository.findNoleggiAttiviAcquirente(emailAcquirente)
+                .stream()
+                .map(n -> oggettiService.getOggettoById(n.getCodiceOggetto().getId()))
+                .collect(Collectors.toList());
+    }
 
 }
