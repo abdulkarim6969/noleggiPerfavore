@@ -19,9 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,13 +39,55 @@ public class OggettiService {
 
     @Transactional
     public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
-        // 1. Salva l'oggetto principale
+
+        // 1) Controlla attributi obbligatori categoria
+        List<String> attributiObbligatori = valoriAttributiService.getAttributiObbligatoriPerCategoria(dto.getNomeCategoria());
+
+        Set<String> attributiForniti = dto.getAttributi() == null ? Collections.emptySet() :
+                dto.getAttributi().stream()
+                        .map(ValoreAttributoDTO::getNomeAttributo)
+                        .collect(Collectors.toSet());
+
+        if (!attributiForniti.containsAll(attributiObbligatori)) {
+            List<String> mancanti = attributiObbligatori.stream()
+                    .filter(a -> !attributiForniti.contains(a))
+                    .collect(Collectors.toList());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Mancano attributi obbligatori per la categoria: " + String.join(", ", mancanti));
+        }
+
+        // 2) Salva l'oggetto principale
         Integer idOggetto = salvaOggettoERitornaId(file, dto);
 
-        // 2. Salva gli attributi
+        // 3) Salva gli attributi
         valoriAttributiService.aggiungiValoriAttributi(
                 new AggiungiValoriAttributiDTO(idOggetto, dto.getAttributi())
         );
+    }
+
+    public Map<String, Object> getOggettiRandomIntervalloEscludendoProprietario(int start, int end, String emailProprietario) {
+        int size = end - start + 1;
+
+        // Recupera tutti gli oggetti esclusi quelli del proprietario
+        List<Oggetti> tuttiOggetti = oggettiRepository.findByEmailProprietario_EmailNot(emailProprietario);
+
+        // Mescola la lista per randomizzare
+        Collections.shuffle(tuttiOggetti);
+
+        // Calcola l’intervallo effettivo da restituire
+        int fromIndex = Math.min(start - 1, tuttiOggetti.size());
+        int toIndex = Math.min(end, tuttiOggetti.size());
+
+        List<Oggetti> subList = tuttiOggetti.subList(fromIndex, toIndex);
+
+        // Prepara la risposta
+        Map<String, Object> response = new HashMap<>();
+        response.put("oggetti", subList);
+
+        // Se siamo arrivati alla fine della lista, aggiungi "stop"
+        response.put("stop", toIndex == tuttiOggetti.size());
+
+        return response;
     }
 
     // Metodo privato riadattato da salvaOggetto() per ritornare l'ID
@@ -167,7 +207,7 @@ public class OggettiService {
         oggettoDTO.setEmailProprietario(oggetti.getEmailProprietario().getEmail());
         oggettoDTO.setNomeCategoria(oggetti.getNomeCategoria().getNome());
         oggettoDTO.setDataCreazione(oggetti.getDataCreazione());
-        oggettoDTO.setDataCreazione(oggetti.getDataUltimaModifica());
+        oggettoDTO.setUltimaModifica(oggetti.getDataUltimaModifica());
         oggettoDTO.setPrezzoGiornaliero(oggetti.getPrezzoGiornaliero());
         oggettoDTO.setImmagineBase64(dataUrl);
 

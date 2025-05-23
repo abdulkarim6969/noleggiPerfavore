@@ -26,4 +26,5 @@ public class AttributiCategoria {
     @Size(max = 50)
     @Column(name = "nomeAttributo", nullable = false, length = 50)
     private String nomeAttributo;
+
 }

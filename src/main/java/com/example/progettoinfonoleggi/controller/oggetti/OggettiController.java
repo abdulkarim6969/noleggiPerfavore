@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/oggetti")
@@ -109,6 +110,16 @@ public class OggettiController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Errore durante il salvataggio dell'immagine: " + ex.getMessage());
         }
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<?> getOggettiRandom(
+            @RequestParam int start,
+            @RequestParam int end,
+            @RequestParam String emailProprietario) {
+
+        Map<String, Object> result = oggettiService.getOggettiRandomIntervalloEscludendoProprietario(start, end, emailProprietario);
+        return ResponseEntity.ok(result);
     }
 
 }
