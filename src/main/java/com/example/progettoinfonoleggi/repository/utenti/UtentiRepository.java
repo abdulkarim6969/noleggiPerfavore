@@ -15,8 +15,6 @@ public interface UtentiRepository extends JpaRepository<Utenti, String> {
 
     Optional<Utenti> findByEmail(String email);
 
-    //Utenti findByEmail(@Size(max = 255) String email);
-
     boolean existsByEmail(String email);
 
     String email(@Size(max = 255) String email);

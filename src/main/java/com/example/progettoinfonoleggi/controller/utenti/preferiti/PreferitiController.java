@@ -1,7 +1,9 @@
 package com.example.progettoinfonoleggi.controller.utenti.preferiti;
 
+import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
 import com.example.progettoinfonoleggi.dto.OggettoDTO;
 import com.example.progettoinfonoleggi.dto.PreferitiDTO;
+import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import com.example.progettoinfonoleggi.service.utenti.preferiti.PreferitiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +33,8 @@ public class PreferitiController {
     }
 
     @GetMapping("/{emailUtente}")
-    public ResponseEntity<List<OggettoDTO>> getOggettiPreferiti(@PathVariable String emailUtente) {
-        List<OggettoDTO> listaPreferiti = preferitiService.getOggettiPreferitiByEmailUtente(emailUtente);
+    public ResponseEntity<List<OggettoCompletoDTO>> getOggettiPreferiti(@PathVariable String emailUtente) {
+        List<OggettoCompletoDTO> listaPreferiti = preferitiService.getOggettiPreferitiByEmailUtente(emailUtente);
         return ResponseEntity.ok(listaPreferiti);
     }
 }

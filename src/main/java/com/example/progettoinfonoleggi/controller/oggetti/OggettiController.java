@@ -36,22 +36,15 @@ public class OggettiController {
         return ResponseEntity.ok("Oggetto salvato con successo");
     }
 
-
     @GetMapping("/{email}")
-    public ResponseEntity<List<OggettoDTO>> getOggettiByEmail(@PathVariable String email) {
-        List<OggettoDTO> lista = oggettiService.getOggettiByEmailProprietario(email);
+    public ResponseEntity<List<OggettoCompletoDTO>> getOggettiByEmail(@PathVariable String email) {
+        List<OggettoCompletoDTO> lista = oggettiService.getOggettiByEmailProprietario(email);
         return ResponseEntity.ok(lista);
     }
 
-    @GetMapping("/oggetto/{id}")
-    public ResponseEntity<OggettoDTO> getOggettoById(@PathVariable int id) {
-        OggettoDTO  oggettoDTO = oggettiService.getOggettoById(id);
-        return ResponseEntity.ok(oggettoDTO);
-    }
-
     @GetMapping("/categoria/{nomeCategoria}")
-    public ResponseEntity<List<OggettoDTO>> getOggettiByNomeCategoria(@PathVariable String nomeCategoria) {
-        List<OggettoDTO> lista = oggettiService.getOggettiByNomeCategoria(nomeCategoria);
+    public ResponseEntity<List<OggettoCompletoDTO>> getOggettiByNomeCategoria(@PathVariable String nomeCategoria) {
+        List<OggettoCompletoDTO> lista = oggettiService.getOggettiByNomeCategoria(nomeCategoria);
         return ResponseEntity.ok(lista);
     }
 
@@ -70,8 +63,8 @@ public class OggettiController {
     }
 
     @GetMapping("/cerca/{nome}")
-    public ResponseEntity<List<OggettoDTO>> cercaOggettiPerNome(@PathVariable String nome) {
-        List<OggettoDTO> lista = oggettiService.getOggettiByNomeSimile(nome);
+    public ResponseEntity<List<OggettoCompletoDTO>> cercaOggettiPerNome(@PathVariable String nome) {
+        List<OggettoCompletoDTO> lista = oggettiService.getOggettiByNomeSimile(nome);
         return ResponseEntity.ok(lista);
     }
 
@@ -87,11 +80,9 @@ public class OggettiController {
         return ResponseEntity.ok(attributi);
     }
 
-    //unire dto di oggetto e attributi così da avere dati oggetto e dati attributi oggetto in un'unica chiamata.
-
-    @GetMapping("/{id}/completo")
+    @GetMapping("/completo/{id}")
     public ResponseEntity<OggettoCompletoDTO> getOggettoCompleto(@PathVariable Integer id) {
-        OggettoCompletoDTO response = oggettiService.getOggettoCompletoById(id);
+        OggettoCompletoDTO response = oggettiService.getOggettoById(id);
         return ResponseEntity.ok(response);
     }
 
