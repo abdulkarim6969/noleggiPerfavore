@@ -250,5 +250,22 @@ public class NoleggioService {
         }
     }
 
+    public List<RichiestaNoleggioDTO> getRichiesteRicevuteDaUtente(String emailDestinatario) {
+        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findByCodiceOggetto_EmailProprietario_Email(emailDestinatario);
+        return richieste.stream()
+                .map(this::convertiInDTO)
+                .collect(Collectors.toList());
+    }
+
+    private RichiestaNoleggioDTO convertiInDTO(RichiesteNoleggi richiesta) {
+        RichiestaNoleggioDTO dto = new RichiestaNoleggioDTO();
+        // Mappa i campi necessari, ad esempio:
+        dto.setEmailUtente(richiesta.getEmailRichiedente().getEmail());
+        dto.setCodiceOggetto(richiesta.getCodiceOggetto().getId());
+        dto.setDataInizio(richiesta.getDataInizio());
+        dto.setDataFine(richiesta.getDataFine());
+        // aggiungi altri campi utili
+        return dto;
+    }
 
 }

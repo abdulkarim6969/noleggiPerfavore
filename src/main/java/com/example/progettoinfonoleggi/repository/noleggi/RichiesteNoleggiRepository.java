@@ -16,5 +16,7 @@ public interface RichiesteNoleggiRepository extends JpaRepository<RichiesteNoleg
     List<RichiesteNoleggi> findRichiesteAttiveSovrapposte(@Param("codiceOggetto") Integer codiceOggetto,
                                                            @Param("dataInizio") LocalDate dataInizio,
                                                            @Param("dataFine") LocalDate dataFine);
+
+    List<RichiesteNoleggi> findByCodiceOggetto_EmailProprietario_Email(String emailProprietario);
 }
 
