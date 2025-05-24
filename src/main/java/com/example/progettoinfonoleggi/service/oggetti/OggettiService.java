@@ -77,33 +77,48 @@ public class OggettiService {
             return ids;
         });
 
-        // Calcola gli indici (0-based)
+        return creaRispostaRandom(start, end, listaIdRandom);
+    }
+
+    public Map<String, Object> getOggettiRandomIntervalloPublic(int start, int end) {
+        // Usa una cache globale per la randomizzazione pubblica
+        final String cacheKey = "PUBLIC";
+        List<Integer> listaIdRandom = cacheOggettiRandom.computeIfAbsent(cacheKey, k -> {
+            List<Integer> ids = oggettiRepository.findAll()
+                    .stream()
+                    .map(Oggetti::getId)
+                    .collect(Collectors.toList());
+            Collections.shuffle(ids);
+            return ids;
+        });
+
+        return creaRispostaRandom(start, end, listaIdRandom);
+    }
+
+    private Map<String, Object> creaRispostaRandom(int start, int end, List<Integer> listaIdRandom) {
         int fromIndex = Math.max(0, start - 1);
         int toIndex = Math.min(end, listaIdRandom.size());
 
-        // Prendi gli ID da restituire in questo intervallo
         List<Integer> subListId = listaIdRandom.subList(fromIndex, toIndex);
 
-        // Recupera dal DB gli oggetti corrispondenti agli ID
         List<Oggetti> oggetti = oggettiRepository.findAllById(subListId);
 
-        // Mappa in DTO
         List<OggettoCompletoDTO> dtoList = oggetti.stream()
                 .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
 
-        // Prepara risposta
         Map<String, Object> response = new HashMap<>();
         response.put("oggetti", dtoList);
         response.put("stop", toIndex == listaIdRandom.size());
 
-        // Se abbiamo finito la lista, puoi opzionalmente rimuovere la cache per liberare memoria
         if (toIndex == listaIdRandom.size()) {
-            cacheOggettiRandom.remove(emailProprietario);
+            // Rimuovi la cache se abbiamo finito gli elementi
+            listaIdRandom.clear();
         }
 
         return response;
     }
+
 
     // Metodo privato riadattato da salvaOggetto() per ritornare l'ID
     private Integer salvaOggettoERitornaId(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
