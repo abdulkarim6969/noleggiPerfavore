@@ -1,5 +1,6 @@
 package com.example.progettoinfonoleggi.service.noleggi;
 
+import com.example.progettoinfonoleggi.dto.NoleggioConOggettoDTO;
 import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
 import com.example.progettoinfonoleggi.dto.RichiestaNoleggioDTO;
 import com.example.progettoinfonoleggi.model.noleggi.*;
@@ -13,6 +14,7 @@ import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.SaldoRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
 import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
+import com.example.progettoinfonoleggi.service.oggetti.ValoriAttributiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,10 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +60,9 @@ public class NoleggioService {
 
     @Autowired
     private NoleggiRepository noleggiRepository;
+
+    @Autowired
+    ValoriAttributiService valoriAttributiService;
 
     public static final String STATO_IN_ATTESA = "IN_ATTESA";
     public static final String STATO_IN_SPEDIZIONE = "IN_SPEDIZIONE";
@@ -275,11 +277,25 @@ public class NoleggioService {
         // aggiungi altri campi utili
         return dto;
     }
-    public List<OggettoCompletoDTO> getNoleggiAttiviProprietario(String emailProprietario) {
-        return noleggiRepository.findNoleggiAttiviProprietario(emailProprietario)
-                .stream()
-                .map(n -> oggettiService.getOggettoById(n.getCodiceOggetto().getId()))
-                .collect(Collectors.toList());
+
+    public List<NoleggioConOggettoDTO> getNoleggiAttiviProprietarioConOggetto(String emailProprietario) {
+        // Recupera i noleggi attivi per il proprietario
+        List<Noleggi> noleggiAttivi = noleggioRepository.findNoleggiAttiviByEmailNoleggiatore_Email(emailProprietario);
+
+        // Mappa ogni noleggio nel DTO aggregato
+        return noleggiAttivi.stream().map(noleggio -> {
+            NoleggioConOggettoDTO dto = new NoleggioConOggettoDTO();
+            dto.setIdNoleggio(noleggio.getCodiceID());
+            dto.setDataInizio(noleggio.getDataInizio());
+            dto.setDataFine(noleggio.getDataFine());
+            dto.setStato(noleggio.getStato());
+
+            // Converti l'oggetto associato in DTO
+            OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(noleggio.getCodiceOggetto());
+            dto.setOggetto(oggettoDTO);
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     public List<OggettoCompletoDTO> getNoleggiAttiviAcquirente(String emailAcquirente) {

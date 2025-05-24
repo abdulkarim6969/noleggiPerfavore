@@ -1,5 +1,6 @@
 package com.example.progettoinfonoleggi.controller.noleggi;
 
+import com.example.progettoinfonoleggi.dto.NoleggioConOggettoDTO;
 import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
 import com.example.progettoinfonoleggi.dto.RichiestaNoleggioDTO;
 import com.example.progettoinfonoleggi.service.noleggi.NoleggioService;
@@ -52,14 +53,15 @@ public class NoleggiController {
     }
 
     @GetMapping("/attivi/proprietario/{email}")
-    public ResponseEntity<List<OggettoCompletoDTO>> getNoleggiAttiviProprietario(@PathVariable String email) {
+    public ResponseEntity<List<NoleggioConOggettoDTO>> getNoleggiAttiviProprietario(@PathVariable String email) {
         try {
-            List<OggettoCompletoDTO> result = noleggioService.getNoleggiAttiviProprietario(email);
+            List<NoleggioConOggettoDTO> result = noleggioService.getNoleggiAttiviProprietarioConOggetto(email);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
+
 
     @GetMapping("/attivi/acquirente/{email}")
     public ResponseEntity<List<OggettoCompletoDTO>> getNoleggiAttiviAcquirente(@PathVariable String email) {
