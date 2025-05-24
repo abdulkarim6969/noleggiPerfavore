@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +37,8 @@ public class OggettiService {
 
     @Autowired
     private ValoriAttributiService valoriAttributiService;
+
+    private final Map<String, List<Integer>> cacheOggettiRandom = new ConcurrentHashMap<>();
 
     @Transactional
     public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
@@ -66,31 +69,38 @@ public class OggettiService {
     }
 
     public Map<String, Object> getOggettiRandomIntervalloEscludendoProprietario(int start, int end, String emailProprietario) {
-        int size = end - start + 1;
+        // Ottieni o crea la lista randomizzata degli ID oggetti per questo proprietario
+        List<Integer> listaIdRandom = cacheOggettiRandom.computeIfAbsent(emailProprietario, email -> {
+            // Recupera tutti gli ID degli oggetti NON del proprietario
+            List<Integer> ids = oggettiRepository.findIdByEmailProprietarioNot(email);
+            Collections.shuffle(ids);
+            return ids;
+        });
 
-        // Recupera tutti gli oggetti esclusi quelli del proprietario
-        List<Oggetti> tuttiOggetti = oggettiRepository.findByEmailProprietario_EmailNot(emailProprietario);
+        // Calcola gli indici (0-based)
+        int fromIndex = Math.max(0, start - 1);
+        int toIndex = Math.min(end, listaIdRandom.size());
 
-        // Mescola la lista per randomizzare
-        Collections.shuffle(tuttiOggetti);
+        // Prendi gli ID da restituire in questo intervallo
+        List<Integer> subListId = listaIdRandom.subList(fromIndex, toIndex);
 
-        // Calcola l’intervallo effettivo da restituire
-        int fromIndex = Math.min(start - 1, tuttiOggetti.size());
-        int toIndex = Math.min(end, tuttiOggetti.size());
+        // Recupera dal DB gli oggetti corrispondenti agli ID
+        List<Oggetti> oggetti = oggettiRepository.findAllById(subListId);
 
-        List<Oggetti> subList = tuttiOggetti.subList(fromIndex, toIndex);
-
-        // Converti la subList in DTO
-        List<OggettoCompletoDTO> dtoList = subList.stream()
-                .map(this::convertiACompletoDTO)  // Assumi che questo metodo esista nel service
+        // Mappa in DTO
+        List<OggettoCompletoDTO> dtoList = oggetti.stream()
+                .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
 
-        // Prepara la risposta
+        // Prepara risposta
         Map<String, Object> response = new HashMap<>();
         response.put("oggetti", dtoList);
+        response.put("stop", toIndex == listaIdRandom.size());
 
-        // Se siamo arrivati alla fine della lista, aggiungi "stop"
-        response.put("stop", toIndex == tuttiOggetti.size());
+        // Se abbiamo finito la lista, puoi opzionalmente rimuovere la cache per liberare memoria
+        if (toIndex == listaIdRandom.size()) {
+            cacheOggettiRandom.remove(emailProprietario);
+        }
 
         return response;
     }
