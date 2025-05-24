@@ -130,7 +130,7 @@ public class OggettiService {
                 ));
 
         CategorieOggetti categoria = categorieRepository
-                .findByNome(dto.getNomeCategoria())
+                .findByNomeIgnoreCase(dto.getNomeCategoria())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Errore: categoria '" + dto.getNomeCategoria() + "' non trovata"
@@ -158,7 +158,7 @@ public class OggettiService {
 
         // 2. Controllo Categoria
         CategorieOggetti categoria = categorieRepository
-                .findByNome(dto.getNomeCategoria())
+                .findByNomeIgnoreCase(dto.getNomeCategoria())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Errore: categoria '" + dto.getNomeCategoria() + "' non trovata"
@@ -182,7 +182,7 @@ public class OggettiService {
                 .orElseThrow(() -> new EntityNotFoundException("Utente non trovato: " + dto.getEmailProprietario()));
 
         // 2) Recupera la categoria
-        CategorieOggetti categoria = categorieRepository.findByNome(dto.getNomeCategoria())
+        CategorieOggetti categoria = categorieRepository.findByNomeIgnoreCase(dto.getNomeCategoria())
                 .orElseThrow(() -> new EntityNotFoundException("Categoria non trovata: " + dto.getNomeCategoria()));
 
         // 3) Mappa a entity

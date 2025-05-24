@@ -34,6 +34,13 @@ public class ValoriAttributiService {
         Oggetti oggetto = oggettiRepository.findById(Math.toIntExact(dto.getIdOggetto()))
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
 
+        List<ValoreAttributoDTO> attributi = dto.getAttributi();
+
+        if (attributi == null || attributi.isEmpty()) {
+            // Nessun attributo da aggiungere, esci tranquillamente
+            return;
+        }
+
         for (ValoreAttributoDTO valoreAttribuito : dto.getAttributi()) {
             AttributiCategoria attributo = attributiCategoriaRepository.findByCategoria_Nome(oggetto.getNomeCategoria().getNome())
                     .stream()
