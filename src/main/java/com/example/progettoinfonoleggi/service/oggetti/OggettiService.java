@@ -274,6 +274,16 @@ public class OggettiService {
         return dto;
     }
 
-
-
+    public List<CategoriaDTO> getTutteCategorie() {
+        List<CategorieOggetti> categorie = categorieRepository.findAll();
+        return categorie.stream()
+            .map(c -> {
+                CategoriaDTO dto = new CategoriaDTO();
+                dto.setNome(c.getNome());
+                return dto;
+            })
+        .collect(Collectors.toList());
+    }
 }
+
+

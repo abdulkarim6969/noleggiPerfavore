@@ -114,4 +114,9 @@ public class OggettiController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/categorie")
+    public ResponseEntity<List<CategoriaDTO>> getCategorie() {
+        List<CategoriaDTO> categorie = oggettiService.getTutteCategorie();
+        return ResponseEntity.ok(categorie);
+    }
 }
