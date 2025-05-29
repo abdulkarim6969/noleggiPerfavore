@@ -81,24 +81,24 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+public ResponseEntity<String> logout(HttpServletRequest request) {
 
-        System.out.println("Logout function");
-        String authHeader = request.getHeader("Authorization");
+    System.out.println("Logout function");
+    String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("Missing or invalid Authorization header");
-            return ResponseEntity.ok("Logout without  token");
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        System.out.println("Missing or invalid Authorization header");
+        return ResponseEntity.ok("Logout without  token");
 
-        }
-
-        String token = authHeader.substring(7);
-        System.out.println("this is the token: " + token);
-
-        jwtService.revokeToken(token);
-
-        return ResponseEntity.ok("Logout successful, token revoked");
     }
+
+    String token = authHeader.substring(7);
+    System.out.println("this is the token: " + token);
+
+    jwtService.revokeToken(token);
+
+    return ResponseEntity.ok("Logout successful, token revoked");
+}
 }
 
 

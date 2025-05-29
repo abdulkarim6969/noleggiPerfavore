@@ -114,7 +114,7 @@ public class OggettiController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/random/{start}/{end}")
+    @GetMapping("/randomPublic/{start}/{end}")
     public ResponseEntity<?> getOggettiRandomPublic(
             @PathVariable int start,
             @PathVariable int end) {
