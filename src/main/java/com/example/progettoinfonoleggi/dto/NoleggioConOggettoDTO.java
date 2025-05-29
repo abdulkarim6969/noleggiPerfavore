@@ -12,6 +12,5 @@ public class NoleggioConOggettoDTO {
     private LocalDate dataInizio;
     private LocalDate dataFine;
     private String stato;
-
     private OggettoCompletoDTO oggetto;
 }

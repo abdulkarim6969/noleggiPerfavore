@@ -270,6 +270,7 @@ public class NoleggioService {
     private RichiestaNoleggioDTO convertiInDTO(RichiesteNoleggi richiesta) {
         RichiestaNoleggioDTO dto = new RichiestaNoleggioDTO();
         // Mappa i campi necessari, ad esempio:
+        dto.setIdNoleggio(Math.toIntExact(richiesta.getCodiceID()));
         dto.setEmailUtente(richiesta.getEmailRichiedente().getEmail());
         dto.setCodiceOggetto(richiesta.getCodiceOggetto().getId());
         dto.setDataInizio(richiesta.getDataInizio());
@@ -280,7 +281,7 @@ public class NoleggioService {
 
     public List<NoleggioConOggettoDTO> getNoleggiAttiviProprietarioConOggetto(String emailProprietario) {
         // Recupera i noleggi attivi per il proprietario
-        List<Noleggi> noleggiAttivi = noleggioRepository.findNoleggiAttiviByEmailNoleggiatore_Email(emailProprietario);
+        List<Noleggi> noleggiAttivi = noleggioRepository.findNoleggiAttiviProprietario(emailProprietario);
 
         // Mappa ogni noleggio nel DTO aggregato
         return noleggiAttivi.stream().map(noleggio -> {

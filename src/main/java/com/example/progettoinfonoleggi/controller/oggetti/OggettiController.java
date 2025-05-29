@@ -114,14 +114,7 @@ public class OggettiController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/randomPublic/{start}/{end}")
-    public ResponseEntity<?> getOggettiRandomPublic(
-            @PathVariable int start,
-            @PathVariable int end) {
 
-        Map<String, Object> result = oggettiService.getOggettiRandomIntervalloPublic(start, end);
-        return ResponseEntity.ok(result);
-    }
 
     @GetMapping("/categorie")
     public ResponseEntity<List<CategoriaDTO>> getCategorie() {
