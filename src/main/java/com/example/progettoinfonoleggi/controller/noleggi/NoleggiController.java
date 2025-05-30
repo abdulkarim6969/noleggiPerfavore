@@ -64,9 +64,9 @@ public class NoleggiController {
 
 
     @GetMapping("/attivi/acquirente/{email}")
-    public ResponseEntity<List<OggettoCompletoDTO>> getNoleggiAttiviAcquirente(@PathVariable String email) {
+    public ResponseEntity<List<NoleggioConOggettoDTO>> getNoleggiAttiviAcquirente(@PathVariable String email) {
         try {
-            List<OggettoCompletoDTO> result = noleggioService.getNoleggiAttiviAcquirente(email);
+            List<NoleggioConOggettoDTO> result = noleggioService.getNoleggiAttiviAcquirente(email);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

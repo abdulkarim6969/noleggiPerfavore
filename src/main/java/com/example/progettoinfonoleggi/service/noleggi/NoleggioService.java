@@ -73,7 +73,7 @@ public class NoleggioService {
     public RichiestaNoleggioDTO creaRichiestaNoleggio(RichiestaNoleggioDTO richiestaDTO) {
 
         // Conversione da DTO a entità
-        Utenti utente = utentiRepository.findByEmail(richiestaDTO.getEmailUtente())
+        Utenti utente = utentiRepository.findByEmail(richiestaDTO.getEmailUtenteRichiedente())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
         Oggetti oggetto = oggettiRepository.findById(richiestaDTO.getCodiceOggetto())
@@ -121,7 +121,7 @@ public class NoleggioService {
 
     private RichiestaNoleggioDTO convertToRichiestaDTO(RichiesteNoleggi richiesta) {
         RichiestaNoleggioDTO dto = new RichiestaNoleggioDTO();
-        dto.setEmailUtente(richiesta.getEmailRichiedente().getEmail());
+        dto.setEmailUtenteRichiedente(richiesta.getEmailRichiedente().getEmail());
         dto.setCodiceOggetto(richiesta.getCodiceOggetto().getId());
         dto.setDataInizio(richiesta.getDataInizio());
         dto.setDataFine(richiesta.getDataFine());
@@ -261,7 +261,7 @@ public class NoleggioService {
     }
 
     public List<RichiestaNoleggioDTO> getRichiesteRicevuteDaUtente(String emailDestinatario) {
-        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findByCodiceOggetto_EmailProprietario_Email(emailDestinatario);
+        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findByCodiceOggetto_EmailProprietario_EmailAndStato(emailDestinatario, "IN_ATTESA");
         return richieste.stream()
                 .map(this::convertiInDTO)
                 .collect(Collectors.toList());
@@ -269,15 +269,26 @@ public class NoleggioService {
 
     private RichiestaNoleggioDTO convertiInDTO(RichiesteNoleggi richiesta) {
         RichiestaNoleggioDTO dto = new RichiestaNoleggioDTO();
-        // Mappa i campi necessari, ad esempio:
+
         dto.setIdNoleggio(Math.toIntExact(richiesta.getCodiceID()));
-        dto.setEmailUtente(richiesta.getEmailRichiedente().getEmail());
+        dto.setEmailUtenteRichiedente(richiesta.getEmailRichiedente().getEmail());
         dto.setCodiceOggetto(richiesta.getCodiceOggetto().getId());
         dto.setDataInizio(richiesta.getDataInizio());
         dto.setDataFine(richiesta.getDataFine());
-        // aggiungi altri campi utili
+
+        // Recupera l'oggetto e lo inserisce nel DTO
+        Optional<Oggetti> o =  oggettiRepository.findById(richiesta.getCodiceOggetto().getId());
+        if (o.isPresent()) {
+            OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(o.get());
+            dto.setOggetto(oggettoDTO);
+        }
+        else {
+            dto.setOggetto(null);
+        }
+
         return dto;
     }
+
 
     public List<NoleggioConOggettoDTO> getNoleggiAttiviProprietarioConOggetto(String emailProprietario) {
         // Recupera i noleggi attivi per il proprietario
@@ -288,9 +299,9 @@ public class NoleggioService {
             NoleggioConOggettoDTO dto = new NoleggioConOggettoDTO();
             dto.setIdNoleggio(noleggio.getCodiceID());
             dto.setDataInizio(noleggio.getDataInizio());
+            dto.setEmail(noleggio.getEmailProprietario().getEmail());
             dto.setDataFine(noleggio.getDataFine());
             dto.setStato(noleggio.getStato());
-
             // Converti l'oggetto associato in DTO
             OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(noleggio.getCodiceOggetto());
             dto.setOggetto(oggettoDTO);
@@ -299,11 +310,25 @@ public class NoleggioService {
         }).collect(Collectors.toList());
     }
 
-    public List<OggettoCompletoDTO> getNoleggiAttiviAcquirente(String emailAcquirente) {
-        return noleggiRepository.findNoleggiAttiviAcquirente(emailAcquirente)
-                .stream()
-                .map(n -> oggettiService.getOggettoById(n.getCodiceOggetto().getId()))
-                .collect(Collectors.toList());
+    public List<NoleggioConOggettoDTO> getNoleggiAttiviAcquirente(String emailAcquirente) {
+        List<Noleggi> noleggiAttivi = noleggiRepository.findNoleggiAttiviAcquirente(emailAcquirente);
+
+        return noleggiAttivi.stream().map(noleggio ->
+        {
+            NoleggioConOggettoDTO dto = new NoleggioConOggettoDTO();
+            dto.setIdNoleggio(noleggio.getCodiceID());
+            dto.setDataInizio(noleggio.getDataInizio());
+            dto.setDataFine(noleggio.getDataFine());
+            dto.setEmail(noleggio.getEmailNoleggiatore().getEmail());
+            dto.setStato(noleggio.getStato());
+
+            // Converti l'oggetto associato in DTO
+            OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(noleggio.getCodiceOggetto());
+            dto.setOggetto(oggettoDTO);
+
+            return dto;
+        }).collect(Collectors.toList());
+
     }
 
 }
