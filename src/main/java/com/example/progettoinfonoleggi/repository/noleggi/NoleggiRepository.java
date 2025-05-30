@@ -4,10 +4,12 @@ import com.example.progettoinfonoleggi.model.noleggi.Noleggi;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface NoleggiRepository extends JpaRepository<Noleggi, Long> {
 
     // Conta noleggi attivi che si sovrappongono a un intervallo per un oggetto

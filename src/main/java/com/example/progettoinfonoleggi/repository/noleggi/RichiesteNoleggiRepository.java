@@ -4,10 +4,12 @@ import com.example.progettoinfonoleggi.model.noleggi.RichiesteNoleggi;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface RichiesteNoleggiRepository extends JpaRepository<RichiesteNoleggi, Long> {
 
     // Trova richieste attive che si sovrappongono a un intervallo per un oggetto
@@ -17,8 +19,12 @@ public interface RichiesteNoleggiRepository extends JpaRepository<RichiesteNoleg
                                                            @Param("dataInizio") LocalDate dataInizio,
                                                            @Param("dataFine") LocalDate dataFine);
 
-    List<RichiesteNoleggi> findByCodiceOggetto_EmailProprietario_EmailAndStato(String emailProprietario, String stato);
-
-    List<RichiesteNoleggi> findByCodiceOggetto_EmailProprietario_Email(String emailProprietario);
+    @Query("SELECT r FROM RichiesteNoleggi r " +
+            "WHERE r.codiceOggetto.emailProprietario.email = :emailProprietario " +
+            "AND r.stato = :stato")
+    List<RichiesteNoleggi> findRichiesteByProprietarioAndStato(
+            @Param("emailProprietario") String emailProprietario,
+            @Param("stato") String stato
+    );
 }
 

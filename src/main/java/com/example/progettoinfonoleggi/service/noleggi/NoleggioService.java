@@ -261,7 +261,10 @@ public class NoleggioService {
     }
 
     public List<RichiestaNoleggioDTO> getRichiesteRicevuteDaUtente(String emailDestinatario) {
-        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findByCodiceOggetto_EmailProprietario_EmailAndStato(emailDestinatario, "IN_ATTESA");
+        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findRichiesteByProprietarioAndStato(
+                emailDestinatario,
+                "IN_ATTESA"
+        );
         return richieste.stream()
                 .map(this::convertiInDTO)
                 .collect(Collectors.toList());
