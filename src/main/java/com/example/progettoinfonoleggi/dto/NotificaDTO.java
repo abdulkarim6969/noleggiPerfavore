@@ -16,8 +16,9 @@ public class NotificaDTO {
     private boolean letto;
     private String emailMittente;
     private String nomeOggetto;
+    private Integer idOggetto;
 
-    public NotificaDTO(Long id, String messaggio, String tipo, LocalDateTime data, boolean letto, String emailMittente, String nomeOggetto) {
+    public NotificaDTO(Long id, String messaggio, String tipo, LocalDateTime data, boolean letto, String emailMittente, String nomeOggetto, Integer idOggetto) {
         this.id = id;
         this.messaggio = messaggio;
         this.tipo = tipo;
@@ -25,6 +26,7 @@ public class NotificaDTO {
         this.letto = letto;
         this.emailMittente = emailMittente;
         this.nomeOggetto = nomeOggetto;
+        this.idOggetto = idOggetto;
     }
 }
 

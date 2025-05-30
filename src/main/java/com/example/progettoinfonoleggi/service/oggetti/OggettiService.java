@@ -6,7 +6,9 @@ import com.example.progettoinfonoleggi.model.oggetti.Oggetti;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
 import com.example.progettoinfonoleggi.repository.oggetti.categorie.CategorieOggettiRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
+import com.example.progettoinfonoleggi.repository.oggetti.categorie.ValoriAttributiRepository;
 import com.example.progettoinfonoleggi.repository.utenti.UtentiRepository;
+import com.example.progettoinfonoleggi.repository.utenti.preferiti.PreferitiRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,12 @@ public class OggettiService {
 
     @Autowired
     private ValoriAttributiService valoriAttributiService;
+
+    @Autowired
+    private ValoriAttributiRepository valoriAttributiRepository;
+
+    @Autowired
+    private PreferitiRepository preferitiRepository;
 
     @Transactional
     public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
@@ -262,6 +270,17 @@ public class OggettiService {
         dto.setAttributi(valoriAttributiService.getValoriPerOggetto(oggetto.getId()));
 
         return dto;
+    }
+
+    @Transactional
+    public void rimuoviOggetto(Integer id) {
+        Oggetti oggetto = oggettiRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Oggetto non trovato"));
+
+        valoriAttributiRepository.deleteByOggettoId(id);
+        preferitiRepository.deleteByOggetto_Id(id);
+
+        oggettiRepository.delete(oggetto);
     }
 
 

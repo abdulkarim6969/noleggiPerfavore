@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PreferitiRepository extends JpaRepository<Preferiti, Integer> {
-    Optional<Preferiti> findByEmailUtenteAndIdOggetto(Utenti utente, Oggetti oggetto);
 
-    @Query("SELECT p.idOggetto FROM Preferiti p WHERE p.emailUtente.email = :emailUtente")
+    Optional<Preferiti> findByEmailUtenteAndOggetto(Utenti utente, Oggetti oggetto);
+
+    @Query("SELECT p.oggetto FROM Preferiti p WHERE p.emailUtente.email = :emailUtente")
     List<Oggetti> findOggettiPreferitiByEmailUtente(@Param("emailUtente") String emailUtente);
 
-    boolean existsByEmailUtenteAndIdOggetto(Utenti utente, Oggetti oggetto);
+    boolean existsByEmailUtenteAndOggetto(Utenti utente, Oggetti oggetto);
+
+    void deleteByOggetto_Id(Integer idOggetto);
 }

@@ -7,6 +7,7 @@ import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import com.example.progettoinfonoleggi.service.utenti.preferiti.PreferitiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,11 +27,14 @@ public class PreferitiController {
         return ResponseEntity.ok("Oggetto aggiunto ai preferiti");
     }
 
-    @PostMapping("/rimuovi")
-    public ResponseEntity<?> rimuovi(@RequestBody PreferitiDTO preferito) {
-        preferitiService.rimuoviPreferito(preferito);
+    @DeleteMapping("/rimuovi/{idOggetto}")
+    public ResponseEntity<?> rimuovi(@PathVariable Integer idOggetto, Authentication authentication) {
+        String emailUtente = authentication.getName(); // preso dal token JWT
+        preferitiService.rimuoviPreferito(idOggetto, emailUtente);
         return ResponseEntity.ok("Oggetto rimosso dai preferiti");
     }
+
+
 
     @GetMapping("/{emailUtente}")
     public ResponseEntity<List<OggettoCompletoDTO>> getOggettiPreferiti(@PathVariable String emailUtente) {

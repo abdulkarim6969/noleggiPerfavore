@@ -18,17 +18,24 @@ public class NotificheService {
     public List<NotificaDTO> getNotificheByDestinatario(String email) {
         List<Notifiche> notifiche = notificheRepository.findByEmailDestinatarioEmailOrderByDataDesc(email);
         return notifiche.stream()
-                .map(n -> new NotificaDTO(
-                        n.getId(),
-                        n.getMessaggio(),
-                        n.getTipo(),
-                        n.getData(),
-                        n.isLetto(),
-                        n.getEmailMittente().getEmail(),
-                        n.getIdOggetto().getNome()
-                ))
+                .map(n -> {
+                    String nomeOggetto = n.getIdOggetto() != null ? n.getIdOggetto().getNome() : null;
+                    Integer idOggetto = n.getIdOggetto() != null ? n.getIdOggetto().getId() : null;
+
+                    return new NotificaDTO(
+                            n.getId(),
+                            n.getMessaggio(),
+                            n.getTipo(),
+                            n.getData(),
+                            n.isLetto(),
+                            n.getEmailMittente().getEmail(),
+                            nomeOggetto,
+                            idOggetto
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
 
 
 }

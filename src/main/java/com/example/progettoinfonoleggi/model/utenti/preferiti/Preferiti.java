@@ -29,6 +29,6 @@ public class Preferiti {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "idOggetto", nullable = false)
-    private Oggetti idOggetto;
+    private Oggetti oggetto;
 
 }

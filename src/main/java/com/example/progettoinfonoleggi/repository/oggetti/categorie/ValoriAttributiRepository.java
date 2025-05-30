@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface ValoriAttributiRepository extends JpaRepository<ValoriAttributi, Integer> {
     List<ValoriAttributi> findByOggetto_Id(Integer idOggetto);
     Optional<ValoriAttributi> findByOggetto_IdAndAttributo_Id(Integer idOggetto, Integer idAttributo);
+    void deleteByOggettoId(Integer oggettoId);
 
 }

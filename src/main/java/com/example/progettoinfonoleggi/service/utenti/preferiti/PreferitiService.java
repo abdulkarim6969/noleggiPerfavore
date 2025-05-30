@@ -43,7 +43,7 @@ public class PreferitiService {
         Oggetti oggetto = oggettiRepository.findById(preferito.getIdOggetto())
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
 
-        boolean exists = preferitiRepository.existsByEmailUtenteAndIdOggetto(utente, oggetto);
+        boolean exists = preferitiRepository.existsByEmailUtenteAndOggetto(utente, oggetto);
         if (exists) {
             throw new RuntimeException("Articolo già presente nei preferiti");
         }
@@ -62,24 +62,26 @@ public class PreferitiService {
 
         Preferiti NEWpreferito = new Preferiti();
         NEWpreferito.setEmailUtente(utente);
-        NEWpreferito.setIdOggetto(oggetto);
+        NEWpreferito.setOggetto(oggetto);
 
         preferitiRepository.save(NEWpreferito);
 
 
     }
 
-    public void rimuoviPreferito(PreferitiDTO preferito) {
-        Utenti utente = utentiRepository.findByEmail(preferito.getEmailUtente())
+    public void rimuoviPreferito(Integer idOggetto, String emailUtente) {
+        Utenti utente = utentiRepository.findByEmail(emailUtente)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
-        Oggetti oggetto = oggettiRepository.findById(preferito.getIdOggetto())
+
+        Oggetti oggetto = oggettiRepository.findById(idOggetto)
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
 
-        Preferiti newpreferito = preferitiRepository.findByEmailUtenteAndIdOggetto(utente, oggetto)
+        Preferiti preferito = preferitiRepository.findByEmailUtenteAndOggetto(utente, oggetto)
                 .orElseThrow(() -> new RuntimeException("Preferito non trovato"));
 
-        preferitiRepository.delete(newpreferito);
+        preferitiRepository.delete(preferito);
     }
+
 
     public List<OggettoCompletoDTO> getOggettiPreferitiByEmailUtente(String emailUtente) {
         return preferitiRepository.findOggettiPreferitiByEmailUtente(emailUtente).stream()

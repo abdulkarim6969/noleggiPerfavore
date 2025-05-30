@@ -97,7 +97,6 @@ public class OggettiController {
                     .body(ex.getReason());
 
         } catch (IOException ex) {
-            // Gestione specifica per errori di I/O (es. file corrotto)
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Errore durante il salvataggio dell'immagine: " + ex.getMessage());
@@ -113,5 +112,20 @@ public class OggettiController {
         Map<String, Object> result = oggettiService.getOggettiRandomIntervalloEscludendoProprietario(start, end, emailProprietario);
         return ResponseEntity.ok(result);
     }
+
+    //frontend mettere if notifiche(idOggetto).isNull scrivere "oggetto eliminato"
+    @DeleteMapping("/rimuovi/{id}")
+    public ResponseEntity<String> eliminaOggetto(@PathVariable Integer id) {
+        try {
+            oggettiService.rimuoviOggetto(id);
+            return ResponseEntity.ok("Oggetto eliminato con successo");
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Errore durante l'eliminazione dell'oggetto: " + ex.getMessage());
+        }
+    }
+
 
 }

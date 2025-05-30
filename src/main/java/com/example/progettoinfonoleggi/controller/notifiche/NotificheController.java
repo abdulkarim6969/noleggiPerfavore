@@ -22,4 +22,6 @@ public class NotificheController {
         List<NotificaDTO> notifiche = notificheService.getNotificheByDestinatario(email);
         return ResponseEntity.ok(notifiche);
     }
+
+
 }
