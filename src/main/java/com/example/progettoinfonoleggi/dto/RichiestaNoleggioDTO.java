@@ -15,7 +15,8 @@ public class RichiestaNoleggioDTO {
     private Integer idNoleggio;
 
     @NotNull(message = "L'email dell'utente è obbligatoria")
-    private String emailUtente;
+    private String emailUtenteRichiedente;
+
 
     @NotNull(message = "L'ID dell'oggetto è obbligatorio")
     private Integer codiceOggetto;
@@ -28,5 +29,6 @@ public class RichiestaNoleggioDTO {
     @Future(message = "La data di fine deve essere futura")
     private LocalDate dataFine;
 
+    private OggettoCompletoDTO oggetto;
 }
 
