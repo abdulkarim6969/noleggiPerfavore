@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,11 +40,15 @@ public class OggettiService {
     @Autowired
     private ValoriAttributiService valoriAttributiService;
 
+<<<<<<< HEAD
     @Autowired
     private ValoriAttributiRepository valoriAttributiRepository;
 
     @Autowired
     private PreferitiRepository preferitiRepository;
+=======
+    private final Map<String, List<Integer>> cacheOggettiRandom = new ConcurrentHashMap<>();
+>>>>>>> 2112425a53a04872ba42e3745454f8f8ca543ae1
 
     @Transactional
     public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
@@ -74,34 +79,56 @@ public class OggettiService {
     }
 
     public Map<String, Object> getOggettiRandomIntervalloEscludendoProprietario(int start, int end, String emailProprietario) {
-        int size = end - start + 1;
+        // Ottieni o crea la lista randomizzata degli ID oggetti per questo proprietario
+        List<Integer> listaIdRandom = cacheOggettiRandom.computeIfAbsent(emailProprietario, email -> {
+            // Recupera tutti gli ID degli oggetti NON del proprietario
+            List<Integer> ids = oggettiRepository.findIdByEmailProprietarioNot(email);
+            Collections.shuffle(ids);
+            return ids;
+        });
 
-        // Recupera tutti gli oggetti esclusi quelli del proprietario
-        List<Oggetti> tuttiOggetti = oggettiRepository.findByEmailProprietario_EmailNot(emailProprietario);
+        return creaRispostaRandom(start, end, listaIdRandom);
+    }
 
-        // Mescola la lista per randomizzare
-        Collections.shuffle(tuttiOggetti);
+    public Map<String, Object> getOggettiRandomIntervalloPublic(int start, int end) {
+        // Usa una cache globale per la randomizzazione pubblica
+        final String cacheKey = "PUBLIC";
+        List<Integer> listaIdRandom = cacheOggettiRandom.computeIfAbsent(cacheKey, k -> {
+            List<Integer> ids = oggettiRepository.findAll()
+                    .stream()
+                    .map(Oggetti::getId)
+                    .collect(Collectors.toList());
+            Collections.shuffle(ids);
+            return ids;
+        });
 
-        // Calcola l’intervallo effettivo da restituire
-        int fromIndex = Math.min(start - 1, tuttiOggetti.size());
-        int toIndex = Math.min(end, tuttiOggetti.size());
+        return creaRispostaRandom(start, end, listaIdRandom);
+    }
 
-        List<Oggetti> subList = tuttiOggetti.subList(fromIndex, toIndex);
+    private Map<String, Object> creaRispostaRandom(int start, int end, List<Integer> listaIdRandom) {
+        int fromIndex = Math.max(0, start - 1);
+        int toIndex = Math.min(end, listaIdRandom.size());
 
-        // Converti la subList in DTO
-        List<OggettoCompletoDTO> dtoList = subList.stream()
-                .map(this::convertiACompletoDTO)  // Assumi che questo metodo esista nel service
+        List<Integer> subListId = listaIdRandom.subList(fromIndex, toIndex);
+
+        List<Oggetti> oggetti = oggettiRepository.findAllById(subListId);
+
+        List<OggettoCompletoDTO> dtoList = oggetti.stream()
+                .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
 
-        // Prepara la risposta
         Map<String, Object> response = new HashMap<>();
         response.put("oggetti", dtoList);
+        response.put("stop", toIndex == listaIdRandom.size());
 
-        // Se siamo arrivati alla fine della lista, aggiungi "stop"
-        response.put("stop", toIndex == tuttiOggetti.size());
+        if (toIndex == listaIdRandom.size()) {
+            // Rimuovi la cache se abbiamo finito gli elementi
+            listaIdRandom.clear();
+        }
 
         return response;
     }
+
 
     // Metodo privato riadattato da salvaOggetto() per ritornare l'ID
     private Integer salvaOggettoERitornaId(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
@@ -113,7 +140,7 @@ public class OggettiService {
                 ));
 
         CategorieOggetti categoria = categorieRepository
-                .findByNome(dto.getNomeCategoria())
+                .findByNomeIgnoreCase(dto.getNomeCategoria())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Errore: categoria '" + dto.getNomeCategoria() + "' non trovata"
@@ -141,7 +168,7 @@ public class OggettiService {
 
         // 2. Controllo Categoria
         CategorieOggetti categoria = categorieRepository
-                .findByNome(dto.getNomeCategoria())
+                .findByNomeIgnoreCase(dto.getNomeCategoria())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Errore: categoria '" + dto.getNomeCategoria() + "' non trovata"
@@ -165,7 +192,7 @@ public class OggettiService {
                 .orElseThrow(() -> new EntityNotFoundException("Utente non trovato: " + dto.getEmailProprietario()));
 
         // 2) Recupera la categoria
-        CategorieOggetti categoria = categorieRepository.findByNome(dto.getNomeCategoria())
+        CategorieOggetti categoria = categorieRepository.findByNomeIgnoreCase(dto.getNomeCategoria())
                 .orElseThrow(() -> new EntityNotFoundException("Categoria non trovata: " + dto.getNomeCategoria()));
 
         // 3) Mappa a entity
@@ -272,6 +299,7 @@ public class OggettiService {
         return dto;
     }
 
+<<<<<<< HEAD
     @Transactional
     public void rimuoviOggetto(Integer id) {
         Oggetti oggetto = oggettiRepository.findById(id)
@@ -283,6 +311,18 @@ public class OggettiService {
         oggettiRepository.delete(oggetto);
     }
 
-
-
+=======
+    public List<CategoriaDTO> getTutteCategorie() {
+        List<CategorieOggetti> categorie = categorieRepository.findAll();
+        return categorie.stream()
+            .map(c -> {
+                CategoriaDTO dto = new CategoriaDTO();
+                dto.setNome(c.getNome());
+                return dto;
+            })
+        .collect(Collectors.toList());
+    }
 }
+>>>>>>> 2112425a53a04872ba42e3745454f8f8ca543ae1
+
+

@@ -7,11 +7,10 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class NoleggioDTO {
-    private Long id;
-    private Integer codiceOggetto;
+public class NoleggioConOggettoDTO {
+    private Long idNoleggio;
     private LocalDate dataInizio;
     private LocalDate dataFine;
     private String stato;
-    private OggettoDTO oggetto;
+    private OggettoCompletoDTO oggetto;
 }

@@ -11,6 +11,9 @@ import java.time.LocalDate;
 @Setter
 public class RichiestaNoleggioDTO {
 
+    @NotNull(message = "L'ID del noleggio")
+    private Integer idNoleggio;
+
     @NotNull(message = "L'email dell'utente è obbligatoria")
     private String emailUtente;
 
