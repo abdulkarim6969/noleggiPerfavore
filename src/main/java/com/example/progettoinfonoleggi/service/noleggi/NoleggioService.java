@@ -119,6 +119,10 @@ public class NoleggioService {
         return convertToRichiestaDTO(richiesta);
     }
 
+    public boolean oggettoHaNoleggiAttivi(Integer idOggetto) {
+        return noleggiRepository.existsByCodiceOggetto_IdAndStatoNot(idOggetto, "INATTIVO");
+    }
+
     private RichiestaNoleggioDTO convertToRichiestaDTO(RichiesteNoleggi richiesta) {
         RichiestaNoleggioDTO dto = new RichiestaNoleggioDTO();
         dto.setEmailUtenteRichiedente(richiesta.getEmailRichiedente().getEmail());

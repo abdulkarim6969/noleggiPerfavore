@@ -2,6 +2,7 @@ package com.example.progettoinfonoleggi.controller.oggetti;
 
 
 import com.example.progettoinfonoleggi.dto.*;
+import com.example.progettoinfonoleggi.service.noleggi.NoleggioService;
 import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import com.example.progettoinfonoleggi.service.oggetti.ValoriAttributiService;
 import jakarta.validation.Valid;
@@ -25,6 +26,9 @@ public class OggettiController {
 
     @Autowired
     private OggettiService oggettiService;
+
+    @Autowired
+    private NoleggioService noleggioService;
 
     @Autowired
     private ValoriAttributiService valoriAttributiService;
@@ -113,10 +117,14 @@ public class OggettiController {
         return ResponseEntity.ok(result);
     }
 
-    //frontend mettere if notifiche(idOggetto).isNull scrivere "oggetto eliminato"
     @DeleteMapping("/rimuovi/{id}")
     public ResponseEntity<String> eliminaOggetto(@PathVariable Integer id) {
         try {
+            if (noleggioService.oggettoHaNoleggiAttivi(id)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Impossibile eliminare l'oggetto: è attualmente coinvolto in un noleggio attivo.");
+            }
+
             oggettiService.rimuoviOggetto(id);
             return ResponseEntity.ok("Oggetto eliminato con successo");
         } catch (ResponseStatusException ex) {
@@ -126,6 +134,8 @@ public class OggettiController {
                     .body("Errore durante l'eliminazione dell'oggetto: " + ex.getMessage());
         }
     }
+
+
 
 
     @GetMapping("/categorie")

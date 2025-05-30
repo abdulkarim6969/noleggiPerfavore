@@ -31,4 +31,8 @@ public interface NoleggiRepository extends JpaRepository<Noleggi, Long> {
     List<Noleggi> findNoleggiAttiviAcquirente(@Param("email") String email);
 
     List<Noleggi> findNoleggiAttiviByEmailNoleggiatore_Email(String emailProprietario);
+    boolean existsByCodiceOggetto_IdAndStatoNot(Integer codiceOggetto, String stato);
+
+
+
 }
