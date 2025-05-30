@@ -302,7 +302,7 @@ public class NoleggioService {
             NoleggioConOggettoDTO dto = new NoleggioConOggettoDTO();
             dto.setIdNoleggio(noleggio.getCodiceID());
             dto.setDataInizio(noleggio.getDataInizio());
-            dto.setEmail(noleggio.getEmailProprietario().getEmail());
+            dto.setEmail(noleggio.getEmailNoleggiatore().getEmail());
             dto.setDataFine(noleggio.getDataFine());
             dto.setStato(noleggio.getStato());
             // Converti l'oggetto associato in DTO
