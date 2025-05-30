@@ -265,7 +265,10 @@ public class NoleggioService {
     }
 
     public List<RichiestaNoleggioDTO> getRichiesteRicevuteDaUtente(String emailDestinatario) {
-        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findByCodiceOggetto_EmailProprietario_EmailAndStato(emailDestinatario, "IN_ATTESA");
+        List<RichiesteNoleggi> richieste = richiestaNoleggioRepository.findRichiesteByProprietarioAndStato(
+                emailDestinatario,
+                "IN_ATTESA"
+        );
         return richieste.stream()
                 .map(this::convertiInDTO)
                 .collect(Collectors.toList());
@@ -303,7 +306,7 @@ public class NoleggioService {
             NoleggioConOggettoDTO dto = new NoleggioConOggettoDTO();
             dto.setIdNoleggio(noleggio.getCodiceID());
             dto.setDataInizio(noleggio.getDataInizio());
-            dto.setEmail(noleggio.getEmailProprietario().getEmail());
+            dto.setEmail(noleggio.getEmailNoleggiatore().getEmail());
             dto.setDataFine(noleggio.getDataFine());
             dto.setStato(noleggio.getStato());
             // Converti l'oggetto associato in DTO
