@@ -204,6 +204,18 @@ public class NoleggioService {
         saldoRepository.save(saldoProprietario);
     }
 
+    public void rifiutaRichiesta(Long idRichiesta) {
+        RichiesteNoleggi richiesta = richiestaNoleggioRepository.findById(idRichiesta)
+                .orElseThrow(() -> new RuntimeException("Richiesta non trovata"));
+
+        if (!"IN_ATTESA".equals(richiesta.getStato())) {
+            throw new RuntimeException("Richiesta non in stato valido per accettazione");
+        }
+
+        richiesta.setStato("RIFIUTATA");
+        richiestaNoleggioRepository.save(richiesta);
+    }
+
 
     public List<LocalDate> getGiorniOccupatiConBuffer(Integer codiceOggetto) {
         List<Noleggi> noleggiAttivi = noleggioRepository.findNoleggiAttiviByOggetto(codiceOggetto);

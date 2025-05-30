@@ -41,6 +41,16 @@ public class NoleggiController {
         }
     }
 
+    @PostMapping("/richieste/{id}/rifiuta")
+    public ResponseEntity<?> rifiutaRichiesta(@PathVariable Long id) {
+        try {
+            noleggioService.rifiutaRichiesta(id);
+            return ResponseEntity.ok("Richiesta rifiutata ");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     /**
      * Restituisce tutti i giorni occupati per un oggetto, inclusi i 3 giorni di buffer prima e dopo ogni noleggio.
      * @param codiceOggetto ID dell'oggetto
