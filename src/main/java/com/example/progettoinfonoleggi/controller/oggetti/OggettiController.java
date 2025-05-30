@@ -113,7 +113,6 @@ public class OggettiController {
         return ResponseEntity.ok(result);
     }
 
-<<<<<<< HEAD
     //frontend mettere if notifiche(idOggetto).isNull scrivere "oggetto eliminato"
     @DeleteMapping("/rimuovi/{id}")
     public ResponseEntity<String> eliminaOggetto(@PathVariable Integer id) {
@@ -129,13 +128,10 @@ public class OggettiController {
     }
 
 
-=======
-
-
     @GetMapping("/categorie")
     public ResponseEntity<List<CategoriaDTO>> getCategorie() {
         List<CategoriaDTO> categorie = oggettiService.getTutteCategorie();
         return ResponseEntity.ok(categorie);
     }
->>>>>>> 2112425a53a04872ba42e3745454f8f8ca543ae1
+
 }

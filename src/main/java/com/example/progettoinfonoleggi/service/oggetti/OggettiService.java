@@ -40,15 +40,13 @@ public class OggettiService {
     @Autowired
     private ValoriAttributiService valoriAttributiService;
 
-<<<<<<< HEAD
+
     @Autowired
     private ValoriAttributiRepository valoriAttributiRepository;
 
     @Autowired
     private PreferitiRepository preferitiRepository;
-=======
     private final Map<String, List<Integer>> cacheOggettiRandom = new ConcurrentHashMap<>();
->>>>>>> 2112425a53a04872ba42e3745454f8f8ca543ae1
 
     @Transactional
     public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
@@ -299,7 +297,6 @@ public class OggettiService {
         return dto;
     }
 
-<<<<<<< HEAD
     @Transactional
     public void rimuoviOggetto(Integer id) {
         Oggetti oggetto = oggettiRepository.findById(id)
@@ -311,7 +308,6 @@ public class OggettiService {
         oggettiRepository.delete(oggetto);
     }
 
-=======
     public List<CategoriaDTO> getTutteCategorie() {
         List<CategorieOggetti> categorie = categorieRepository.findAll();
         return categorie.stream()
@@ -323,6 +319,5 @@ public class OggettiService {
         .collect(Collectors.toList());
     }
 }
->>>>>>> 2112425a53a04872ba42e3745454f8f8ca543ae1
 
 
