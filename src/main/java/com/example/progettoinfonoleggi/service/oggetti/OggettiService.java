@@ -93,20 +93,6 @@ public class OggettiService {
         return creaRispostaRandom(start, end, listaIdRandom);
     }
 
-    public Map<String, Object> getOggettiRandomIntervalloPublic(int start, int end) {
-        // Usa una cache globale per la randomizzazione pubblica
-        final String cacheKey = "PUBLIC";
-        List<Integer> listaIdRandom = cacheOggettiRandom.computeIfAbsent(cacheKey, k -> {
-            List<Integer> ids = oggettiRepository.findAll()
-                    .stream()
-                    .map(Oggetti::getId)
-                    .collect(Collectors.toList());
-            Collections.shuffle(ids);
-            return ids;
-        });
-
-        return creaRispostaRandom(start, end, listaIdRandom);
-    }
 
     private Map<String, Object> creaRispostaRandom(int start, int end, List<Integer> listaIdRandom) {
         int fromIndex = Math.max(0, start - 1);
