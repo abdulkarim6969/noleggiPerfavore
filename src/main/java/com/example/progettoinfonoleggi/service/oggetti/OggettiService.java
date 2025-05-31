@@ -310,7 +310,12 @@ public class OggettiService {
         .collect(Collectors.toList());
     }
 
-
+    public List<AttributoCategoriaDTO> getAttributiByNomeCategoria(String nomeCategoria) {
+        List<AttributiCategoria> attributi = attributiCategoriaRepository.findByCategoria_Nome(nomeCategoria);
+        return attributi.stream()
+                .map(a -> new AttributoCategoriaDTO(a.getNomeAttributo()))
+                .collect(Collectors.toList());
+    }
 
 }
 

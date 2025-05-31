@@ -10,6 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttributoCategoriaDTO {
-    private Integer idAttributoCategoria;
     private String nomeAttributo;
 }

@@ -135,13 +135,15 @@ public class OggettiController {
         }
     }
 
-
-
-
     @GetMapping("/categorie")
     public ResponseEntity<List<CategoriaDTO>> getCategorie() {
         List<CategoriaDTO> categorie = oggettiService.getTutteCategorie();
         return ResponseEntity.ok(categorie);
+    }
+
+    @GetMapping("/attributiCategoria/{nomeCategoria}")
+    public List<AttributoCategoriaDTO> getAttributiByCategoria(@PathVariable String nomeCategoria) {
+        return oggettiService.getAttributiByNomeCategoria(nomeCategoria);
     }
 
 }
