@@ -89,5 +89,14 @@ public class PreferitiService {
                 .toList();
     }
 
+    public boolean isPreferito(String emailUtente, Integer idOggetto) {
+        Utenti utente = utentiRepository.findByEmail(emailUtente)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        Oggetti oggetto = oggettiRepository.findById(idOggetto)
+                .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
+
+        return preferitiRepository.existsByEmailUtenteAndOggetto(utente, oggetto);
+    }
+
 
 }

@@ -18,4 +18,8 @@ public class PreferitiDTO {
 
     public PreferitiDTO(@Size(max = 255) String email, Integer id) {
     }
+
+    public PreferitiDTO() {
+
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/preferiti")
@@ -20,12 +21,17 @@ public class PreferitiController {
     @Autowired
     private PreferitiService preferitiService;
 
+    @PostMapping("/aggiungi/{idOggetto}")
+    public ResponseEntity<?> addPreferiti(@PathVariable Integer idOggetto, Authentication authentication) {
+        String emailUtente = authentication.getName(); // preso dal token JWT
+        PreferitiDTO preferito = new PreferitiDTO();
+        preferito.setEmailUtente(emailUtente);
+        preferito.setIdOggetto(idOggetto);
 
-    @PostMapping("/aggiungi")
-    public ResponseEntity<?> addPreferiti(@RequestBody PreferitiDTO preferito) {
         preferitiService.aggiungiPreferito(preferito);
         return ResponseEntity.ok("Oggetto aggiunto ai preferiti");
     }
+
 
     @DeleteMapping("/rimuovi/{idOggetto}")
     public ResponseEntity<?> rimuovi(@PathVariable Integer idOggetto, Authentication authentication) {
@@ -34,6 +40,12 @@ public class PreferitiController {
         return ResponseEntity.ok("Oggetto rimosso dai preferiti");
     }
 
+    @GetMapping("/check/{idOggetto}")
+    public ResponseEntity<?> isPreferito(@PathVariable Integer idOggetto, Authentication authentication) {
+        String emailUtente = authentication.getName(); // preso dal token
+        boolean isPreferito = preferitiService.isPreferito(emailUtente, idOggetto);
+        return ResponseEntity.ok().body(Map.of("preferito", isPreferito));
+    }
 
 
     @GetMapping("/{emailUtente}")

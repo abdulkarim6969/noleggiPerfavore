@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AttributiCategoriaRepository extends JpaRepository<AttributiCategoria, Long> {
+public interface AttributiCategoriaRepository extends JpaRepository<AttributiCategoria, Integer> {
     List<AttributiCategoria> findByCategoria_Nome(String nomeCategoria);
 }

@@ -1,9 +1,11 @@
 package com.example.progettoinfonoleggi.service.oggetti;
 
 import com.example.progettoinfonoleggi.dto.*;
+import com.example.progettoinfonoleggi.model.oggetti.categorie.AttributiCategoria;
 import com.example.progettoinfonoleggi.model.oggetti.categorie.CategorieOggetti;
 import com.example.progettoinfonoleggi.model.oggetti.Oggetti;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
+import com.example.progettoinfonoleggi.repository.oggetti.categorie.AttributiCategoriaRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.categorie.CategorieOggettiRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.OggettiRepository;
 import com.example.progettoinfonoleggi.repository.oggetti.categorie.ValoriAttributiRepository;
@@ -33,6 +35,9 @@ public class OggettiService {
 
     @Autowired
     private  UtentiRepository utentiRepository;
+
+    @Autowired
+    private AttributiCategoriaRepository attributiCategoriaRepository;
 
     @Autowired
     private  CategorieOggettiRepository categorieRepository;
@@ -318,6 +323,9 @@ public class OggettiService {
             })
         .collect(Collectors.toList());
     }
+
+
+
 }
 
 
