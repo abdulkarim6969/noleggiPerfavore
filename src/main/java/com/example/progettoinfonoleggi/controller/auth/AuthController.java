@@ -5,6 +5,7 @@ import com.example.progettoinfonoleggi.dto.LoginResponseDTO;
 import com.example.progettoinfonoleggi.dto.RegisterRequestDTO;
 import com.example.progettoinfonoleggi.model.utenti.Utenti;
 import com.example.progettoinfonoleggi.service.jwt.JWTservice;
+import com.example.progettoinfonoleggi.service.utenti.SaldoService;
 import com.example.progettoinfonoleggi.service.utenti.UtentiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,6 +26,9 @@ public class AuthController {
     private UtentiService utentiService;
 
     @Autowired
+    private SaldoService saldoService;
+
+    @Autowired
     private JWTservice jwtService;
 
     @PostMapping("/register")
@@ -40,6 +44,9 @@ public class AuthController {
 
         try {
             Utenti registeredUser = utentiService.register(user);
+
+            saldoService.creaSaldoPerUtente(registeredUser.getEmail());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
         } catch (Exception e) {
             // Handle other exceptions
@@ -74,24 +81,24 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+public ResponseEntity<String> logout(HttpServletRequest request) {
 
-        System.out.println("Logout function");
-        String authHeader = request.getHeader("Authorization");
+    System.out.println("Logout function");
+    String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("Missing or invalid Authorization header");
-            return ResponseEntity.ok("Logout without  token");
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        System.out.println("Missing or invalid Authorization header");
+        return ResponseEntity.ok("Logout without  token");
 
-        }
-
-        String token = authHeader.substring(7);
-        System.out.println("this is the token: " + token);
-
-        jwtService.revokeToken(token);
-
-        return ResponseEntity.ok("Logout successful, token revoked");
     }
+
+    String token = authHeader.substring(7);
+    System.out.println("this is the token: " + token);
+
+    jwtService.revokeToken(token);
+
+    return ResponseEntity.ok("Logout successful, token revoked");
+}
 }
 
 

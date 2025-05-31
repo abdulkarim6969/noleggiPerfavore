@@ -1,3 +1,0 @@
-Data Transfer Objects
-per classi che prendono le risposte HTTP e le trasformano in oggetti Java
-es. LoginRequest, RegisterRequest...

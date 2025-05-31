@@ -33,15 +33,14 @@ public class SecurityConfig {
         return http.csrf(customizer -> customizer.disable()).
                 cors(Customizer.withDefaults()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/login","/api/auth/login", "api/auth/register").permitAll()
+                        .requestMatchers("/login","/api/auth/login", "api/auth/register", "api/oggetti/randomPublic/**").permitAll()
                         .anyRequest().authenticated()).
                 httpBasic(Customizer.withDefaults()).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2Login(Customizer.withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
