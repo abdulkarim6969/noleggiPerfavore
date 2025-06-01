@@ -1,7 +1,6 @@
 package com.example.progettoinfonoleggi.controller.utenti.preferiti;
 
 import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
-import com.example.progettoinfonoleggi.dto.OggettoDTO;
 import com.example.progettoinfonoleggi.dto.PreferitiDTO;
 import com.example.progettoinfonoleggi.service.oggetti.OggettiService;
 import com.example.progettoinfonoleggi.service.utenti.preferiti.PreferitiService;
@@ -21,6 +20,7 @@ public class PreferitiController {
     @Autowired
     private PreferitiService preferitiService;
 
+
     @PostMapping("/aggiungi/{idOggetto}")
     public ResponseEntity<?> addPreferiti(@PathVariable Integer idOggetto, Authentication authentication) {
         String emailUtente = authentication.getName(); // preso dal token JWT
@@ -31,7 +31,6 @@ public class PreferitiController {
         preferitiService.aggiungiPreferito(preferito);
         return ResponseEntity.ok("Oggetto aggiunto ai preferiti");
     }
-
 
     @DeleteMapping("/rimuovi/{idOggetto}")
     public ResponseEntity<?> rimuovi(@PathVariable Integer idOggetto, Authentication authentication) {

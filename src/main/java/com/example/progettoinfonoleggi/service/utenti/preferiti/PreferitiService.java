@@ -1,7 +1,6 @@
 package com.example.progettoinfonoleggi.service.utenti.preferiti;
 
 import com.example.progettoinfonoleggi.dto.OggettoCompletoDTO;
-import com.example.progettoinfonoleggi.dto.OggettoDTO;
 import com.example.progettoinfonoleggi.dto.PreferitiDTO;
 import com.example.progettoinfonoleggi.model.notifiche.Notifiche;
 import com.example.progettoinfonoleggi.model.oggetti.Oggetti;
@@ -35,6 +34,7 @@ public class PreferitiService {
 
     @Autowired
     private OggettiService oggettiService;
+
 
     public void aggiungiPreferito(PreferitiDTO preferito) {
 
@@ -81,7 +81,6 @@ public class PreferitiService {
 
         preferitiRepository.delete(preferito);
     }
-
 
     public List<OggettoCompletoDTO> getOggettiPreferitiByEmailUtente(String emailUtente) {
         return preferitiRepository.findOggettiPreferitiByEmailUtente(emailUtente).stream()

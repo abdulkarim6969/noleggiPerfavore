@@ -33,6 +33,7 @@ public class OggettiController {
     @Autowired
     private ValoriAttributiService valoriAttributiService;
 
+
     @GetMapping("/{email}")
     public ResponseEntity<List<OggettoCompletoDTO>> getOggettiByEmail(@PathVariable String email) {
         List<OggettoCompletoDTO> lista = oggettiService.getOggettiByEmailProprietario(email);
@@ -70,7 +71,6 @@ public class OggettiController {
         valoriAttributiService.aggiornaValoriAttributi(dto);
     }
 
-
     @GetMapping("/{id}/attributi")
     public ResponseEntity<List<ValoreAttributoDTO>> getValoriAttributiPerOggetto(@PathVariable Integer id) {
         List<ValoreAttributoDTO> attributi = valoriAttributiService.getValoriPerOggetto(id);
@@ -95,7 +95,6 @@ public class OggettiController {
                     .body("Oggetto e attributi salvati con successo");
 
         } catch (ResponseStatusException ex) {
-            // Gestisce gli errori di validazione già presenti nel service
             return ResponseEntity
                     .status(ex.getStatusCode())
                     .body(ex.getReason());

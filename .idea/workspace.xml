@@ -4,7 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ece6c741-ce6f-455f-a94c-3bd97b7cd4bd" name="Changes" comment="" />
+    <list default="true" id="ece6c741-ce6f-455f-a94c-3bd97b7cd4bd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/auth/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/auth/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/noleggi/NoleggiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/noleggi/NoleggiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/oggetti/OggettiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/oggetti/OggettiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/utenti/UtentiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/utenti/UtentiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/utenti/preferiti/PreferitiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/controller/utenti/preferiti/PreferitiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/dto/CreaOggettoCompletoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/dto/CreaOggettoCompletoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/dto/CreaOggettoDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/dto/LoginResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/dto/LoginResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/dto/OggettoDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/repository/noleggi/NoleggiRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/repository/noleggi/NoleggiRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/repository/noleggi/RichiesteNoleggiRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/repository/noleggi/RichiesteNoleggiRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/noleggi/NoleggioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/noleggi/NoleggioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/notifiche/NotificheService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/notifiche/NotificheService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/oggetti/OggettiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/oggetti/OggettiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/oggetti/ValoriAttributiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/oggetti/ValoriAttributiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/utenti/preferiti/PreferitiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/service/utenti/preferiti/PreferitiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/utility/CustomPasswordEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/progettoinfonoleggi/utility/CustomPasswordEncoder.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,29 +49,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.ProgettoInfoNoleggiApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;test&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ProgettoInfoNoleggiApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="ProgettoInfoNoleggiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="ProgettoInfoNoleggi" />

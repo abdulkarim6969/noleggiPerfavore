@@ -45,18 +45,19 @@ public class OggettiService {
     @Autowired
     private ValoriAttributiService valoriAttributiService;
 
-
     @Autowired
     private ValoriAttributiRepository valoriAttributiRepository;
 
     @Autowired
     private PreferitiRepository preferitiRepository;
+
     private final Map<String, List<Integer>> cacheOggettiRandom = new ConcurrentHashMap<>();
+
 
     @Transactional
     public void salvaOggettoCompleto(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
 
-        // 1) Controlla attributi obbligatori categoria
+        //controlla attributi obbligatori categoria
         List<String> attributiObbligatori = valoriAttributiService.getAttributiObbligatoriPerCategoria(dto.getNomeCategoria());
 
         Set<String> attributiForniti = dto.getAttributi() == null ? Collections.emptySet() :
@@ -72,19 +73,17 @@ public class OggettiService {
                     "Mancano attributi obbligatori per la categoria: " + String.join(", ", mancanti));
         }
 
-        // 2) Salva l'oggetto principale
+        //salva l'oggetto principale
         Integer idOggetto = salvaOggettoERitornaId(file, dto);
 
-        // 3) Salva gli attributi
+        //salva gli attributi
         valoriAttributiService.aggiungiValoriAttributi(
                 new AggiungiValoriAttributiDTO(idOggetto, dto.getAttributi())
         );
     }
 
     public Map<String, Object> getOggettiRandomIntervalloEscludendoProprietario(int start, int end, String emailProprietario) {
-        // Ottieni o crea la lista randomizzata degli ID oggetti per questo proprietario
         List<Integer> listaIdRandom = cacheOggettiRandom.computeIfAbsent(emailProprietario, email -> {
-            // Recupera tutti gli ID degli oggetti NON del proprietario
             List<Integer> ids = oggettiRepository.findIdByEmailProprietarioNot(email);
             Collections.shuffle(ids);
             return ids;
@@ -111,7 +110,6 @@ public class OggettiService {
         response.put("stop", toIndex == listaIdRandom.size());
 
         if (toIndex == listaIdRandom.size()) {
-            // Rimuovi la cache se abbiamo finito gli elementi
             listaIdRandom.clear();
         }
 
@@ -119,7 +117,6 @@ public class OggettiService {
     }
 
 
-    // Metodo privato riadattato da salvaOggetto() per ritornare l'ID
     private Integer salvaOggettoERitornaId(MultipartFile file, CreaOggettoCompletoDTO dto) throws IOException {
         Utenti proprietario = utentiRepository
                 .findByEmail(dto.getEmailProprietario())
@@ -143,65 +140,9 @@ public class OggettiService {
         o.setNomeCategoria(categoria);
         o.setImmagine(file.getBytes());
 
-        return oggettiRepository.save(o).getId(); // Ritorna l'ID dell'oggetto salvato
+        return oggettiRepository.save(o).getId(); //ritorna l'id dell'oggetto salvato
     }
 
-    public void salvaOggetto(MultipartFile file, CreaOggettoDTO dto) throws IOException {
-        // 1. Controllo Utente
-        Utenti proprietario = utentiRepository
-                .findByEmail(dto.getEmailProprietario())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Errore: utente con email '" + dto.getEmailProprietario() + "' non trovato"
-                ));
-
-        // 2. Controllo Categoria
-        CategorieOggetti categoria = categorieRepository
-                .findByNomeIgnoreCase(dto.getNomeCategoria())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Errore: categoria '" + dto.getNomeCategoria() + "' non trovata"
-                ));
-
-        // 3. Costruisco e salvo Oggetti
-        Oggetti o = new Oggetti();
-        o.setNome(dto.getNome());
-        o.setDescrizione(dto.getDescrizione());
-        o.setPrezzoGiornaliero(BigDecimal.valueOf(dto.getPrezzoGiornaliero()));
-        o.setEmailProprietario(proprietario);
-        o.setNomeCategoria(categoria);
-        o.setImmagine(file.getBytes());
-
-        oggettiRepository.save(o);
-    }
-
-    public void creaOggetto(OggettoDTO dto) {
-        // 1) Recupera l’utente proprietario
-        Utenti proprietario = utentiRepository.findByEmail(dto.getEmailProprietario())
-                .orElseThrow(() -> new EntityNotFoundException("Utente non trovato: " + dto.getEmailProprietario()));
-
-        // 2) Recupera la categoria
-        CategorieOggetti categoria = categorieRepository.findByNomeIgnoreCase(dto.getNomeCategoria())
-                .orElseThrow(() -> new EntityNotFoundException("Categoria non trovata: " + dto.getNomeCategoria()));
-
-        // 3) Mappa a entity
-        Oggetti o = new Oggetti();
-        o.setEmailProprietario(proprietario);
-        o.setNomeCategoria(categoria);
-        o.setNome(dto.getNome());
-        o.setDescrizione(dto.getDescrizione());
-        o.setPrezzoGiornaliero(dto.getPrezzoGiornaliero());
-        // Imposta manualmente date (in alternativa puoi lasciare DB default)
-        Instant now = Instant.now();
-        o.setDataCreazione(now);
-        o.setDataUltimaModifica(now);
-        // Decodifica Base64 in byte[]
-        byte[] imageBytes = Base64.getDecoder().decode(dto.getImmagineBase64());
-        o.setImmagine(imageBytes);
-
-        // 4) Salva
-        oggettiRepository.save(o);
-    }
 
     public List<OggettoCompletoDTO> getOggettiByEmailProprietario(String email) {
         return oggettiRepository.findByEmailProprietario_Email(email).stream()
@@ -220,29 +161,6 @@ public class OggettiService {
         return oggettiRepository.findByNomeContainingIgnoreCase(nome).stream()
                 .map(this::convertiACompletoDTO)
                 .collect(Collectors.toList());
-    }
-
-
-    public OggettoDTO getOggettoById(int id) {
-        OggettoDTO oggettoDTO = new OggettoDTO();
-        Oggetti oggetti = oggettiRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Oggetto non trovato"));
-
-        String base64 = Base64.getEncoder().encodeToString(oggetti.getImmagine());
-        String dataUrl = "data:image/jpeg;base64," + base64;
-
-        oggettoDTO.setId(oggetti.getId());
-        oggettoDTO.setDescrizione(oggetti.getDescrizione());
-        oggettoDTO.setNome(oggetti.getNome());
-        oggettoDTO.setEmailProprietario(oggetti.getEmailProprietario().getEmail());
-        oggettoDTO.setNomeCategoria(oggetti.getNomeCategoria().getNome());
-        oggettoDTO.setDataCreazione(oggetti.getDataCreazione());
-        oggettoDTO.setUltimaModifica(oggetti.getDataUltimaModifica());
-        oggettoDTO.setPrezzoGiornaliero(oggetti.getPrezzoGiornaliero());
-        oggettoDTO.setImmagineBase64(dataUrl);
-
-
-        return oggettoDTO;
-
     }
 
     public OggettoCompletoDTO getOggettoById(Integer id) {
@@ -264,7 +182,7 @@ public class OggettiService {
         return img;
     }
 
-    // Metodo privato di supporto per la conversione
+    //conversione da oggetto normale a oggetto con attributi (completo)
     public OggettoCompletoDTO convertiACompletoDTO(Oggetti oggetto) {
         // 1. Converti l'oggetto base
         OggettoCompletoDTO dto = new OggettoCompletoDTO();
@@ -282,7 +200,7 @@ public class OggettiService {
         dto.setDataCreazione(oggetto.getDataCreazione());
         dto.setUltimaModifica(oggetto.getDataUltimaModifica());
 
-        // 2. Aggiungi gli attributi
+        //aggiunta degli attributi
         dto.setAttributi(valoriAttributiService.getValoriPerOggetto(oggetto.getId()));
 
         return dto;
@@ -295,7 +213,6 @@ public class OggettiService {
 
         valoriAttributiRepository.deleteByOggettoId(id);
         preferitiRepository.deleteByOggetto_Id(id);
-
         oggettiRepository.delete(oggetto);
     }
 

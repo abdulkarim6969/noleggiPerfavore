@@ -30,6 +30,7 @@ public class ValoriAttributiService {
     @Autowired
     private OggettiRepository oggettiRepository;
 
+
     public void aggiungiValoriAttributi(AggiungiValoriAttributiDTO dto) {
         Oggetti oggetto = oggettiRepository.findById(Math.toIntExact(dto.getIdOggetto()))
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
@@ -37,7 +38,6 @@ public class ValoriAttributiService {
         List<ValoreAttributoDTO> attributi = dto.getAttributi();
 
         if (attributi == null || attributi.isEmpty()) {
-            // Nessun attributo da aggiungere, esci tranquillamente
             return;
         }
 
@@ -57,9 +57,6 @@ public class ValoriAttributiService {
         }
     }
 
-    /**
-     * Restituisce la lista degli attributi obbligatori per una categoria.
-     */
     public List<String> getAttributiObbligatoriPerCategoria(String nomeCategoria) {
         return attributiCategoriaRepository.findByCategoria_Nome(nomeCategoria).stream()
                 .map(AttributiCategoria::getNomeAttributo)
@@ -87,7 +84,6 @@ public class ValoriAttributiService {
                 valoreEsistente.setValore(valoreDTO.getValore());
                 valoriAttributiRepository.save(valoreEsistente);
             } else {
-                // Puoi ignorare, loggare, oppure sollevare un'eccezione
                 throw new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Valore attributo non trovato per oggetto " + dto.getIdOggetto()

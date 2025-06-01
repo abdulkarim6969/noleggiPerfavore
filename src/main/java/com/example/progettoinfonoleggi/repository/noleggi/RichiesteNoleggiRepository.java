@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface RichiesteNoleggiRepository extends JpaRepository<RichiesteNoleggi, Long> {
 
-    // Trova richieste attive che si sovrappongono a un intervallo per un oggetto
+    //trova richieste attive che si sovrappongono a un intervallo per un oggetto
     @Query("SELECT r FROM RichiesteNoleggi r WHERE r.codiceOggetto.id = :codiceOggetto AND r.stato = 'ACCETTATA' " +
             "AND r.dataInizio <= :dataFine AND r.dataFine >= :dataInizio")
     List<RichiesteNoleggi> findRichiesteAttiveSovrapposte(@Param("codiceOggetto") Integer codiceOggetto,

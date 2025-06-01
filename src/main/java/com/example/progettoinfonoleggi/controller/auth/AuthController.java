@@ -34,7 +34,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            // Collect validation errors
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
                     errors.put(error.getField(), error.getDefaultMessage())
@@ -49,56 +48,43 @@ public class AuthController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
         } catch (Exception e) {
-            // Handle other exceptions
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "An unexpected error occurred."));
         }
     }
 
-
-
-
     @PostMapping("/login")
     public ResponseEntity<?> login (@RequestBody LoginRequestDTO user) {
-        // 1) Invoke your existing verify() method
-        String result = utentiService.verify(user);  // returns token or "fail"
+        String result = utentiService.verify(user);
 
-        // 2) On success, wrap the JWT in our DTO and return 200 OK
         if (!"fail".equals(result)) {
             LoginResponseDTO response = new LoginResponseDTO(result);
             return ResponseEntity
-                    .ok(response);  // HTTP 200 with JSON body {"token":"...","type":"Bearer"} :contentReference[oaicite:6]{index=6}
+                    .ok(response);
         }
-
-        // 3) On failure, return 401 Unauthorized with an error message
         Map<String, String> error = Map.of("message", "Invalid email or password.");
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)  // HTTP 401 :contentReference[oaicite:7]{index=7}
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(error);
     }
 
 
-
-
     @PostMapping("/logout")
-public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        System.out.println("Logout function");
+        String authHeader = request.getHeader("Authorization");
 
-    System.out.println("Logout function");
-    String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("Missing or invalid Authorization header");
+            return ResponseEntity.ok("Logout without  token");
+        }
 
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-        System.out.println("Missing or invalid Authorization header");
-        return ResponseEntity.ok("Logout without  token");
+        String token = authHeader.substring(7);
+        System.out.println("this is the token: " + token);
+        jwtService.revokeToken(token);
 
+        return ResponseEntity.ok("Logout successful, token revoked");
     }
-
-    String token = authHeader.substring(7);
-    System.out.println("this is the token: " + token);
-
-    jwtService.revokeToken(token);
-
-    return ResponseEntity.ok("Logout successful, token revoked");
-}
 }
 
 

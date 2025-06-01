@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface NoleggiRepository extends JpaRepository<Noleggi, Long> {
 
-    // Conta noleggi attivi che si sovrappongono a un intervallo per un oggetto
+    //conta noleggi attivi che si sovrappongono a un intervallo per un oggetto
     @Query("SELECT COUNT(n) FROM Noleggi n WHERE n.codiceOggetto.id = :codiceOggetto AND n.stato = 'ATTIVO' " +
             "AND n.dataInizio <= :dataFine AND n.dataFine >= :dataInizio")
     int countNoleggiAttiviSovrapposti(@Param("codiceOggetto") Integer codiceOggetto,

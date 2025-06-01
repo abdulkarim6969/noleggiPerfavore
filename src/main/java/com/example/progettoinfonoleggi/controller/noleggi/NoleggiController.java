@@ -19,7 +19,7 @@ public class NoleggiController {
     @Autowired
     private NoleggioService noleggioService;
 
-    // Crea richiesta noleggio
+
     @PostMapping("/richieste")
     public ResponseEntity<?> creaRichiesta(@RequestBody RichiestaNoleggioDTO richiestaDTO) {
         try {
@@ -30,7 +30,6 @@ public class NoleggiController {
         }
     }
 
-    // Accetta richiesta noleggio (solo proprietario)
     @PostMapping("/richieste/{id}/accetta")
     public ResponseEntity<?> accettaRichiesta(@PathVariable Long id) {
         try {
@@ -51,11 +50,6 @@ public class NoleggiController {
         }
     }
 
-    /**
-     * Restituisce tutti i giorni occupati per un oggetto, inclusi i 3 giorni di buffer prima e dopo ogni noleggio.
-     * @param codiceOggetto ID dell'oggetto
-     * @return Set di LocalDate con i giorni occupati
-     */
     @GetMapping("/giorniOccupati/{codiceOggetto}")
     public ResponseEntity<List<LocalDate>> getGiorniOccupatiConBuffer(@PathVariable Integer codiceOggetto) {
         List<LocalDate> giorniOccupati = noleggioService.getGiorniOccupatiConBuffer(codiceOggetto);
@@ -72,7 +66,6 @@ public class NoleggiController {
         }
     }
 
-
     @GetMapping("/attivi/acquirente/{email}")
     public ResponseEntity<List<NoleggioConOggettoDTO>> getNoleggiAttiviAcquirente(@PathVariable String email) {
         try {
@@ -82,7 +75,6 @@ public class NoleggiController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
 
     @GetMapping("/richieste/ricevute/{emailProprietario}")
     public ResponseEntity<List<RichiestaNoleggioDTO>> getRichiesteRicevute(@PathVariable String emailProprietario) {

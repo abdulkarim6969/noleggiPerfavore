@@ -36,6 +36,4 @@ public class NotificheService {
                 .collect(Collectors.toList());
     }
 
-
-
 }

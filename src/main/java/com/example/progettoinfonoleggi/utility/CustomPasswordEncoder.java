@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomPasswordEncoder {
 
-    // Metodo per generare l'hash della password
+    //genera hash della password
     public String encode(String rawPassword) {
         return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
     }
 
-    // Metodo per confrontare la password inserita con quella salvata (comparazione dell'hash)
+    //comparazione degli hash delle password
     public boolean matches(String rawPassword, String encodedPassword) {
         return BCrypt.checkpw(rawPassword, encodedPassword);
     }

@@ -12,5 +12,5 @@ public class CreaOggettoCompletoDTO {
     private double prezzoGiornaliero;
     private String emailProprietario;
     private String nomeCategoria;
-    private List<ValoreAttributoDTO> attributi;  // Attributi da associare
+    private List<ValoreAttributoDTO> attributi;
 }

@@ -64,6 +64,7 @@ public class NoleggioService {
     @Autowired
     ValoriAttributiService valoriAttributiService;
 
+
     public static final String STATO_IN_ATTESA = "IN_ATTESA";
     public static final String STATO_IN_SPEDIZIONE = "IN_SPEDIZIONE";
     public static final String STATO_ATTIVO = "ATTIVO";
@@ -72,20 +73,20 @@ public class NoleggioService {
     @Transactional
     public RichiestaNoleggioDTO creaRichiestaNoleggio(RichiestaNoleggioDTO richiestaDTO) {
 
-        // Conversione da DTO a entità
+        //conversione da DTO a entità
         Utenti utente = utentiRepository.findByEmail(richiestaDTO.getEmailUtenteRichiedente())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
         Oggetti oggetto = oggettiRepository.findById(richiestaDTO.getCodiceOggetto())
                 .orElseThrow(() -> new RuntimeException("Oggetto non trovato"));
 
-        // Controllo data inizio (almeno 3 giorni nel futuro)
+        //controllo data inizio (almeno 3 giorni dal giorno in cui si sta prenotando)
         LocalDate oggi = LocalDate.now();
         if (richiestaDTO.getDataInizio().isBefore(oggi.plusDays(3))) {
             throw new RuntimeException("La data di inizio deve essere almeno tra 3 giorni da oggi");
         }
 
-        // Controllo disponibilità (con buffer 3 giorni)
+        //controllo disponibilità (con buffer 3 giorni)
         LocalDate inizioBuffer = richiestaDTO.getDataInizio().minusDays(3);
         LocalDate fineBuffer = richiestaDTO.getDataFine().plusDays(3);
         int countNoleggi = noleggioRepository.countNoleggiAttiviSovrapposti(oggetto.getId(), inizioBuffer, fineBuffer);
@@ -103,7 +104,7 @@ public class NoleggioService {
 
 
         Notifiche notifica = new Notifiche();
-        notifica.setEmailDestinatario(richiesta.getCodiceOggetto().getEmailProprietario()); // proprietario
+        notifica.setEmailDestinatario(richiesta.getCodiceOggetto().getEmailProprietario());
         notifica.setEmailMittente(richiesta.getEmailRichiedente()); // richiedente
         notifica.setMessaggio("Hai ricevuto una nuova richiesta di noleggio per l'oggetto '"
                 + richiesta.getCodiceOggetto().getNome() + "'");
@@ -111,11 +112,9 @@ public class NoleggioService {
         notifica.setIdOggetto(richiesta.getCodiceOggetto());
         notifica.setLetto(false);
         notifica.setData(LocalDateTime.now());
-
         notificheRepository.save(notifica);
 
-
-        // Conversione da entità a DTO per la risposta
+        //conversione da entità a DTO per la risposta
         return convertToRichiestaDTO(richiesta);
     }
 
@@ -148,7 +147,6 @@ public class NoleggioService {
         String paymentIdDestinatario = "PAYD-" + UUID.randomUUID();
         String nomeCorriere = "Corriere Fittizio";
 
-        // Creo transazione
         Transazioni transazione = new Transazioni();
         transazione.setEmailMittente(richiesta.getEmailRichiedente());
         transazione.setEmailDestinatario(richiesta.getCodiceOggetto().getEmailProprietario());
@@ -160,7 +158,6 @@ public class NoleggioService {
         transazione.setPaymentIdDestinatario(paymentIdDestinatario);
         transazione = transazioneRepository.save(transazione);
 
-        // Creo spedizione
         Spedizioni spedizione = new Spedizioni();
         spedizione.setEmailMittente(richiesta.getCodiceOggetto().getEmailProprietario());
         spedizione.setEmailDestinatario(richiesta.getEmailRichiedente());
@@ -170,7 +167,6 @@ public class NoleggioService {
         spedizione.setStato("IN_PREPARAZIONE");
         spedizione = spedizioneRepository.save(spedizione);
 
-        // Creo noleggio
         Noleggi noleggio = new Noleggi();
         noleggio.setCodiceOggetto(richiesta.getCodiceOggetto());
         noleggio.setEmailNoleggiatore(richiesta.getEmailRichiedente());
@@ -192,7 +188,6 @@ public class NoleggioService {
 
         noleggioRepository.save(noleggio);
 
-        // AGGIORNAMENTO SALDO DEL PROPRIETARIO
         String emailProprietario = richiesta.getCodiceOggetto().getEmailProprietario().getEmail();
 
         Saldo saldoProprietario = saldoRepository.findByEmailUtente(emailProprietario)
@@ -222,11 +217,9 @@ public class NoleggioService {
         Set<LocalDate> giorniOccupati = new HashSet<>();
 
         for (Noleggi noleggio : noleggiAttivi) {
-            // Estendi intervallo con buffer 3 giorni prima e dopo
             LocalDate inizio = noleggio.getDataInizio().minusDays(3);
             LocalDate fine = noleggio.getDataFine().plusDays(3);
 
-            // Aggiungi tutti i giorni dell’intervallo al set
             for (LocalDate data = inizio; !data.isAfter(fine); data = data.plusDays(1)) {
                 giorniOccupati.add(data);
             }
@@ -295,7 +288,6 @@ public class NoleggioService {
         dto.setDataInizio(richiesta.getDataInizio());
         dto.setDataFine(richiesta.getDataFine());
 
-        // Recupera l'oggetto e lo inserisce nel DTO
         Optional<Oggetti> o =  oggettiRepository.findById(richiesta.getCodiceOggetto().getId());
         if (o.isPresent()) {
             OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(o.get());
@@ -310,10 +302,8 @@ public class NoleggioService {
 
 
     public List<NoleggioConOggettoDTO> getNoleggiAttiviProprietarioConOggetto(String emailProprietario) {
-        // Recupera i noleggi attivi per il proprietario
         List<Noleggi> noleggiAttivi = noleggioRepository.findNoleggiAttiviProprietario(emailProprietario);
 
-        // Mappa ogni noleggio nel DTO aggregato
         return noleggiAttivi.stream().map(noleggio -> {
             NoleggioConOggettoDTO dto = new NoleggioConOggettoDTO();
             dto.setIdNoleggio(noleggio.getCodiceID());
@@ -321,7 +311,7 @@ public class NoleggioService {
             dto.setEmail(noleggio.getEmailNoleggiatore().getEmail());
             dto.setDataFine(noleggio.getDataFine());
             dto.setStato(noleggio.getStato());
-            // Converti l'oggetto associato in DTO
+
             OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(noleggio.getCodiceOggetto());
             dto.setOggetto(oggettoDTO);
 
@@ -341,7 +331,6 @@ public class NoleggioService {
             dto.setEmail(noleggio.getEmailNoleggiatore().getEmail());
             dto.setStato(noleggio.getStato());
 
-            // Converti l'oggetto associato in DTO
             OggettoCompletoDTO oggettoDTO = oggettiService.convertiACompletoDTO(noleggio.getCodiceOggetto());
             dto.setOggetto(oggettoDTO);
 
